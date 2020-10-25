@@ -4,13 +4,14 @@ window.Vue = require('vue');
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 
+Vue.component('admin-home', require('./components/adminHomeComponent.vue').default);
+Vue.component('admin-socios', require('./components/sociosComponent.vue').default);
+
 const app = new Vue({
     el: '#app',
-    /* components: {
-        Multiselect: window.VueMultiselect.default
-    }, */
+    
     data: {
-        menu: 2,
+        menu: 1,
     },
     methods: {
 

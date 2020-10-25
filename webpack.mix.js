@@ -11,7 +11,20 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
+/* mix.js('resources/js/app.js', 'public/js')
     .postCss('resources/css/app.css', 'public/css', [
-        //
-    ]);
+        
+    ]); */
+
+mix
+    /* .scripts([
+    'resources/assets/gamepass/js/sweetalert2.all.js',
+    'resources/assets/gamepass/js/functionGeneral.js',
+    'resources/assets/gamepass/js/moment.js',
+    ], 'public/js/gamepass.js') */
+    .autoload({
+    'jquery': ['$', 'window.jQuery', 'jQuery'],
+    'vue': ['Vue','window.Vue'],   
+    //'moment': ['moment','window.moment'],   
+    })
+    .js(['resources/js/app.js'],'public/js/app.js');

@@ -30,8 +30,8 @@
 		gtag('config', 'UA-119386393-1');
 	</script>
 </head>
-<body class="login-page">
-    <div class="pre-loader">
+<body class="login-page">	
+    <!-- <div class="pre-loader">
 		<div class="pre-loader-box">
 			<div class="loader-logo" style="text-align:center !important;"><img src="imgs/logo_crystal.png" alt="" style="width:50% !important"></div>
 			<div class='loader-progress' id="progress_div">
@@ -42,8 +42,7 @@
 				Loading...
 			</div>
 		</div>
-	</div>
-
+	</div> -->
 	<div class="login-header box-shadow">
 		<div class="container-fluid d-flex justify-content-between align-items-center">
 			<div class="brand-logo">
@@ -69,7 +68,7 @@
 						<div class="login-title">
 							<h2 class="text-center text-primary">Iniciar sesión</h2>
 						</div>
-						<form>
+						<form method="get" action="validarCredenciales">
 							<div class="select-role">
 								<div class="btn-group btn-group-toggle" data-toggle="buttons">
 									<label class="btn active">
@@ -112,11 +111,7 @@
 							<div class="row">
 								<div class="col-sm-12">
 									<div class="input-group mb-0">
-										<!--
-											use code for form submit
-											<input class="btn btn-primary btn-lg btn-block" type="submit" value="Sign In">
-										-->
-										<a class="btn btn-primary btn-lg btn-block" href="index.html">Iniciar</a>
+										<input class="btn btn-primary btn-lg btn-block" type="submit" value="Iniciar">										
 									</div>									
 								</div>
 							</div>
