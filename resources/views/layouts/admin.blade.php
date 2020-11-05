@@ -133,13 +133,14 @@
 
 	<div class="main-container">
 		<div class="pd-ltr-20">		
-            @yield('contenido')            
+            @yield('contenidoAdmin')          
 			<div class="footer-wrap pd-20 mb-20 card-box">
 				Crystal - Todos los derechos reservados @ 2020
 			</div>
 		</div>
     </div>
 </div>
+		
 	<!-- js -->
 	<script src="vendors/scripts/core.js"></script>
 	<script src="vendors/scripts/script.min.js"></script>
@@ -162,9 +163,16 @@
 	<script src="src/plugins/datatables/js/vfs_fonts.js"></script>
 
 	<!-- Datatable Setting js -->
-	<script src="vendors/scripts/datatable-setting.js"></script>s
+	<script src="vendors/scripts/datatable-setting.js"></script>
 
 	<!-- script de vue -->
+	<script src="js/crystal.js"></script>
     <script src="js/app.js"></script>
+
+	<script>
+		function cerrarSesion() {
+			sweetConfirm('¿cerrar sesion?','','warning');
+		}
+	</script>
 </body>
 </html>

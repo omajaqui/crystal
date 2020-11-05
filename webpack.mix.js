@@ -17,14 +17,13 @@ const mix = require('laravel-mix');
     ]); */
 
 mix
-    /* .scripts([
-    'resources/assets/gamepass/js/sweetalert2.all.js',
-    'resources/assets/gamepass/js/functionGeneral.js',
-    'resources/assets/gamepass/js/moment.js',
-    ], 'public/js/gamepass.js') */
+    .scripts([
+        'resources/crystal/js/sweetalert2.all.js',
+        'resources/crystal/js/functionGeneral.js',
+        'resources/crystal/js/moment.js',
+    ], 'public/js/crystal.js')
     .autoload({
-    'jquery': ['$', 'window.jQuery', 'jQuery'],
-    'vue': ['Vue','window.Vue'],   
-    //'moment': ['moment','window.moment'],   
+        'jquery': ['$', 'window.jQuery', 'jQuery'],
+        'vue': ['Vue','window.Vue'],          
     })
     .js(['resources/js/app.js'],'public/js/app.js');

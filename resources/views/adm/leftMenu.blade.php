@@ -18,40 +18,41 @@
 					</li>
 					<li @click="menu=2">
 						<a href="#" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-diagram"></span><span class="mtext">Socios</span>
+							<span class="micon dw dw-group"></span><span class="mtext">Socios</span>
 						</a>
 					</li>
 					<li @click="menu=3">
 						<a href="#" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-diagram"></span><span class="mtext">Cuotas</span>
+							<span class="micon dw dw-money-2"></span><span class="mtext">Cuotas</span>
 						</a>
 					</li>
 					<li @click="menu=4">
 						<a href="#" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-diagram"></span><span class="mtext">Actividades</span>
+							<span class="micon dw dw-rocket"></span><span class="mtext">Actividades</span>
 						</a>
 					</li>
 					<li @click="menu=5">
 						<a href="#" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-diagram"></span><span class="mtext">Prestamos</span>
+							<span class="micon dw dw-credit-card"></span><span class="mtext">Prestamos</span>
 						</a>
 					</li>
 					<li @click="menu=6">
 						<a href="#" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-diagram"></span><span class="mtext">Seguimiento</span>
+							<span class="micon dw dw-insurance"></span><span class="mtext">Seguimiento</span>
 						</a>
 					</li>
-					<li @click="menu=5">
+					<li @click="menu=7">
 						<a href="#" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-diagram"></span><span class="mtext">Notificación</span>
+							<span class="micon dw dw-notification"></span><span class="mtext">Notificación</span>
 						</a>
 					</li>
-					<li @click="menu=5">
+					<li @click="menu=8">
 						<a href="#" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-diagram"></span><span class="mtext">Alertas</span>
+							<span class="micon dw dw-warning-1"></span><span class="mtext">Alertas</span>
 						</a>
 					</li>
 				</ul>
+				
 			</div>
 		</div>
     </div>

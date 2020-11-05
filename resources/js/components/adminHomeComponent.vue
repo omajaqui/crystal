@@ -2,13 +2,14 @@
     <div>
         <div class="card-box pd-20 height-100-p mb-30">
             <div class="row align-items-center">
-                <!-- <div class="col-md-4">
-                    <img src="images/banner-img.png" alt="">
-                </div> -->
+                <div class="col-md-4">
+                    <img src="vendors/images/banner-img.png" alt="">
+                </div>
                 <div class="col-md-8">
                     <h4 class="font-20 weight-500 mb-10 text-capitalize">
-                        Bienvenid@ <div class="weight-600 font-30 text-blue">Johana Loaiza</div>
+                        Bienvenid@ {{ numeroGlobal }} <div class="weight-600 font-30 text-blue">Johana Loaiza</div>
                     </h4>
+                    <button @click="aumentar">+</button>
                 </div>
             </div>
         </div>
@@ -85,9 +86,29 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex';
+    import { mapMutations } from 'vuex';
+
     export default {
+        props:['token','dataUsuario'],
+        data(){
+            return{
+                //token,
+            };
+        },
+        computed: {
+            ...mapState(['numeroGlobal','tokenGlobal']),
+        },
+        methods: {
+            ...mapMutations(['aumentar']),
+        },
         mounted() {
-            console.log('Component mounted.')
+            console.log(this.dataUsuario);
+            //guarda datos de sesion globalmente en el store->vuex 
+            this.$store.state.tokenGlobal = this.token;
+            //this.$store.state.dataUsuarioGlobal = this.dataUsuario;
+            //console.log(this.tokenGlobal);
+            console.log('Component mounted.');
         }
     }
 </script>
