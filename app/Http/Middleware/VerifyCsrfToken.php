@@ -19,5 +19,6 @@ class VerifyCsrfToken extends Middleware
         'listarSocios',
         'confirmarGuardar',
         'consultarNumsAsociado',
+        'datosUsuario'
     ];
 }

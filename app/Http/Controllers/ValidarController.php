@@ -77,7 +77,7 @@ class ValidarController extends Controller
                 return view('contenido.admin')
                         ->with([
                                     'Token' => $token,
-                                    'DataUsuario' => $dataUsuario
+                                    'IdPersona' => $dataUsuario[0]->idPersona
                               ]);
             }else if($idTipoUsuario==3){
 
@@ -87,7 +87,7 @@ class ValidarController extends Controller
         
     }
 
-    public function tokenRefresh() {
-        $token = '';
+    public function datosUsuario(Request $request) {
+        return $request;
     }
 }

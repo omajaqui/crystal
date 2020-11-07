@@ -2179,7 +2179,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -2276,22 +2276,44 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['token', 'dataUsuario'],
+  props: ['token', 'idpersona'],
   data: function data() {
-    return {//token,
+    return {
+      idPersona: ''
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])(['numeroGlobal', 'tokenGlobal'])),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])(['aumentar'])),
+  methods: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])(['aumentar'])), {}, {
+    test: function test() {
+      console.log(this.idPersonaGlobal);
+      var url = 'datosUsuario';
+      var data = {
+        idUSuario: this.idPersonaGlobal
+      };
+      axios({
+        method: 'post',
+        url: url,
+        data: data,
+        params: {
+          'HTTP_CONTENT_LANGUAGE': self.language
+        },
+        headers: {
+          'Authorization': "Bearer ".concat(this.tokenGlobal)
+        }
+      }).then(function (response) {
+        console.log(response);
+      });
+    }
+  }),
   mounted: function mounted() {
-    console.log(this.dataUsuario); //guarda datos de sesion globalmente en el store->vuex 
+    this.idPersona = $("#idPersona").val(); //guarda datos de sesion globalmente en el store->vuex 
 
-    this.$store.state.tokenGlobal = this.token; //this.$store.state.dataUsuarioGlobal = this.dataUsuario;
-    //console.log(this.tokenGlobal);
-
-    console.log('Component mounted.');
+    this.$store.state.tokenGlobal = this.token;
+    this.idPersonaGlobal = this.idPersona;
+    this.test();
   }
 });
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),
 
@@ -33825,29 +33847,19 @@ var render = function() {
         _vm._m(0),
         _vm._v(" "),
         _c("div", { staticClass: "col-md-8" }, [
-          _c(
-            "h4",
-            { staticClass: "font-20 weight-500 mb-10 text-capitalize" },
-            [
-              _vm._v(
-                "\n                    Bienvenid@ " +
-                  _vm._s(_vm.numeroGlobal) +
-                  " "
-              ),
-              _c("div", { staticClass: "weight-600 font-30 text-blue" }, [
-                _vm._v("Johana Loaiza")
-              ])
-            ]
-          ),
+          _vm._m(1),
           _vm._v(" "),
-          _c("button", { on: { click: _vm.aumentar } }, [_vm._v("+")])
+          _c("input", {
+            attrs: { type: "hidden", id: "idPersona" },
+            domProps: { value: _vm.idpersona }
+          })
         ])
       ])
     ]),
     _vm._v(" "),
-    _vm._m(1),
+    _vm._m(2),
     _vm._v(" "),
-    _vm._m(2)
+    _vm._m(3)
   ])
 }
 var staticRenderFns = [
@@ -33858,6 +33870,21 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col-md-4" }, [
       _c("img", { attrs: { src: "vendors/images/banner-img.png", alt: "" } })
     ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "h4",
+      { staticClass: "font-20 weight-500 mb-10 text-capitalize" },
+      [
+        _vm._v("\n                    Bienvenid@ "),
+        _c("div", { staticClass: "weight-600 font-30 text-blue" }, [
+          _vm._v("Johana Loaiza")
+        ])
+      ]
+    )
   },
   function() {
     var _vm = this
@@ -49218,7 +49245,7 @@ var store = new Vuex.Store({
   state: {
     numeroGlobal: 16,
     tokenGlobal: '',
-    dataUsuarioGlobal: []
+    idPersonaGlobal: ''
   },
   mutations: {
     aumentar: function aumentar(state) {

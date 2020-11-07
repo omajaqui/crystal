@@ -17,7 +17,7 @@ const store = new Vuex.Store({
     state: {
       numeroGlobal: 16,
       tokenGlobal: '',
-      dataUsuarioGlobal: [],
+      idPersonaGlobal: '',
     },
     mutations: {
       aumentar (state) {

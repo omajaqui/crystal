@@ -7,9 +7,9 @@
                 </div>
                 <div class="col-md-8">
                     <h4 class="font-20 weight-500 mb-10 text-capitalize">
-                        Bienvenid@ {{ numeroGlobal }} <div class="weight-600 font-30 text-blue">Johana Loaiza</div>
-                    </h4>
-                    <button @click="aumentar">+</button>
+                        Bienvenid@ <div class="weight-600 font-30 text-blue">Johana Loaiza</div>
+                    </h4>                    
+                    <input type="hidden" :value="idpersona" id="idPersona">
                 </div>
             </div>
         </div>
@@ -90,10 +90,10 @@
     import { mapMutations } from 'vuex';
 
     export default {
-        props:['token','dataUsuario'],
+        props:['token', 'idpersona'],
         data(){
             return{
-                //token,
+                idPersona:'',                
             };
         },
         computed: {
@@ -101,14 +101,27 @@
         },
         methods: {
             ...mapMutations(['aumentar']),
+            test(){
+                console.log(this.idPersonaGlobal);
+                const url = 'datosUsuario';
+                const data = { idUSuario: this.idPersonaGlobal }  
+                axios({
+                    method: 'post',
+                    url,
+                    data,
+                    params: {'HTTP_CONTENT_LANGUAGE': self.language},
+                    headers: {'Authorization': `Bearer ${this.tokenGlobal}`}
+                }).then(response => {
+                    console.log(response);
+                });
+            }            
         },
         mounted() {
-            console.log(this.dataUsuario);
+            this.idPersona = $("#idPersona").val();
             //guarda datos de sesion globalmente en el store->vuex 
             this.$store.state.tokenGlobal = this.token;
-            //this.$store.state.dataUsuarioGlobal = this.dataUsuario;
-            //console.log(this.tokenGlobal);
-            console.log('Component mounted.');
+            this.idPersonaGlobal = this.idPersona;
+            this.test();
         }
     }
 </script>

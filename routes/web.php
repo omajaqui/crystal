@@ -28,7 +28,8 @@ Route::post('/inicio','ValidarController@inicio');
 // estas rutas requiren de un token válido para poder accederse.
 Route::group(['middleware' => 'jwt.verify'], function () {
     Route::post('/logout', 'AuthController@logout');
-    //Route::post('/inicio','ValidarController@inicio');    
+    //Route::post('/inicio','ValidarController@inicio');
+    Route::post('datosUsuario', 'ValidarController@datosUsuario');   
 });
 
 //SOCIOS
