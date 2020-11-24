@@ -19,6 +19,10 @@ class VerifyCsrfToken extends Middleware
         'listarSocios',
         'confirmarGuardar',
         'consultarNumsAsociado',
-        'datosUsuario'
+        'datosUsuario',
+        'ahorroSocio',
+        'preRegistroSocio',
+        'preRegitros',
+        'cambiarContrasenia'
     ];
 }

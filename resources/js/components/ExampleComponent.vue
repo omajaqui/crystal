@@ -15,14 +15,19 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex';
+    import { mapMutations } from 'vuex';
     export default {
         data() {
             return {
 
             };
         },
+        computed: {
+            ...mapState(['idPersonaGlobal','tokenGlobal','nombreUsuario']),
+        },
         methods: {
-
+            //...mapMutations(['aumentar']),
         },
         
         mounted() {

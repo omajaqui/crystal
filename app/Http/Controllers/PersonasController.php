@@ -34,6 +34,8 @@ class PersonasController extends Controller
         $cuotaMes           = $request->cuotaMes;
         $idPersona          = $request->idPersona;
         $numeroAsociadoAnterior = $request->numeroAsociadoAnterior;
+        $idPreRegistro      = $request->idPreRegistro;
+        $imagenSocio        = $request->imagenSocio;
 
         if ($accion == 'listarSocios') {
             if ($buscar == ''){
@@ -73,8 +75,15 @@ class PersonasController extends Controller
             ];
         }
 
-        if ($accion == 'guardarSocio') {  
-            $getId = DB::select("CALL sp_Gestionarpersonas(?,?,?,?,?,?,?,?,?,?,?,?,?,'','')",
+        if ($accion == 'guardarSocio') { 
+            //si se recibe un idPreregistro se marca el pre-registro como deshabilitado
+            if($idPreRegistro != '' || $idPreRegistro != null){
+                $accionP='Activar';
+                $update = DB::select("CALL crystal.spGestionarPreRegistros(?,?,?)",[$accionP,$idPreRegistro,$documento]);
+            } 
+
+            //guarda persona y devuelde el id con el que quedo el registro
+            $getId = DB::select("CALL sp_Gestionarpersonas(?,?,?,?,?,?,?,?,?,?,?,?,?,'','',?)",
                                         [
                                             $accion,
                                             $tipoDocumento,
@@ -88,12 +97,14 @@ class PersonasController extends Controller
                                             $ciudad,
                                             $barrio, 
                                             $direccion,
-                                            $cuotaMes
+                                            $cuotaMes,
+                                            $imagenSocio
                                         ]
                                 );
             if(array_key_exists(0,$getId)){
                 $id = $getId[0]->id;
                 $request['idPersona'] = $id;
+                //crea un usuario para la aplicacion relacionando el idPersona
                 return $this->register($request);
             }else{
                 $continuar = 'N';
@@ -103,7 +114,7 @@ class PersonasController extends Controller
         }
 
         if ($accion == 'editarSocio') {
-            $update = DB::select("CALL sp_Gestionarpersonas(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            $update = DB::select("CALL sp_Gestionarpersonas(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                                     [
                                         $accion,
                                         $tipoDocumento,
@@ -119,7 +130,8 @@ class PersonasController extends Controller
                                         $direccion,
                                         $cuotaMes,
                                         $idPersona,
-                                        $numeroAsociadoAnterior
+                                        $numeroAsociadoAnterior,
+                                        $imagenSocio
                                     ]                            
                                 );
             if(array_key_exists(0,$update)){
@@ -128,6 +140,17 @@ class PersonasController extends Controller
             }else{
                 $continuar = 'N';
                 $mensaje   = "No se pudo actualizar el registro de socio";
+            }
+        }
+
+        if ($accion == 'sociosCuotas') {
+            $socios = DB::select("CALL sp_Gestionarpersonas(?,'','','','','','','','','','','','','','','')",[$accion]);
+            if (array_key_exists(0,$socios)) {
+                $continuar  = 'S';
+                $mensaje    = 'Success';
+            }else{
+                $continuar  = 'N';
+                $mensaje    = 'No se pudo obtener información de socios';
             }
         }
 
@@ -168,6 +191,109 @@ class PersonasController extends Controller
         $respuesta =  array(
             'Continuar' => $continuar,
             'Mensaje' => $mensaje
+        );
+        return response()->json(compact('respuesta'), 200);
+    }
+
+    public function preRegitros(Request $request)
+    {
+        $accion         = $request->accion;
+        $idPreRegistro  = $request->idPreRegistro;
+        $documento      = $request->documento;
+
+        $continuar = '';
+        $mensaje   = '';
+        $datosRespuesta = [];
+
+        if($accion == 'consultarPre') {
+            $pre = DB::select("CALL crystal.spGestionarPreRegistros(?,'','')",[$accion]);
+
+            if (array_key_exists(0,$pre)) {
+                $continuar = 'S';
+                $mensaje   = 'Success';
+                $datosRespuesta = $pre;
+            }else{
+                $continuar = 'N';
+                $mensaje   = 'No se encontraron pre-registros pendientes por gestionar';
+            }
+        }
+
+        if($accion == 'Rechazar') {
+            $update = DB::select("CALL crystal.spGestionarPreRegistros(?,?,?)",[$accion,$idPreRegistro,$documento]);
+            if(array_key_exists(0,$update)){
+                $res = $update[0]->res;
+                if($res == 'S'){
+                    $continuar = 'S';
+                    $mensaje   = 'Success';
+                }else if($res == 'N'){
+                    $continuar = 'N';
+                    $mensaje   = 'No se realizó el rechazo, intente de nuevo.';
+                }
+            }
+
+        }
+
+        // Comun response
+        $respuesta =  array(
+            //'pagination' => $pagination,
+            'Continuar' => $continuar,
+            'Mensaje' => $mensaje,            
+            'DatosRespuesta' => $datosRespuesta
+        );
+        return response()->json(compact('respuesta'), 200);
+    }
+
+    public function cambiarContrasenia(Request $request)
+    {   
+        $documento  = $request->usuario;
+        $oldPass    = bcrypt($request->oldContrasenia);
+        $password   = bcrypt($request->newPass);
+        $key        = $request->key;        
+
+        $continuar = '';
+        $mensaje   = '';
+        $datosRespuesta = [];
+
+        $accion = 'consultarIdPersona';
+        //consultar el idPersona
+        $getId = DB::select("CALL crystal.spGestionarUsuarios(?,?)",[$accion,$documento]);        
+        if (array_key_exists(0,$getId)){
+            $res = $getId[0]->res;
+            if($res == 'S'){
+                $idP = $getId[0]->idPersona;
+                //obtener el id users
+                $getIdUser = DB::select("SELECT id FROM crystal.users WHERE idPersona=?",[$idP]);
+                if(array_key_exists(0,$getIdUser)) {
+                    $idU = $getIdUser[0]->id;
+                    $user = User::findOrFail($idU);
+                    $user->password = $password;
+                    $user->save();
+
+                    $continuar = 'S';
+                    $mensaje   = 'Contraseña Cambiada Exitosamente';
+
+                }else{
+                    $continuar = 'N';
+                    $mensaje   = 'Ocurrió un error al restablecer la contraseña. intente nuevamente';
+                }
+            }else{
+                $continuar = 'N';
+                $mensaje   = 'Ocurrió';
+            }
+            
+                      
+
+        }else{
+            $continuar = 'N';
+            $mensaje   = 'Ocurrió un error al restablecer la contraseña. intenta de nuevo';
+        }        
+
+        // Comun response
+        $respuesta =  array(
+            //'pagination' => $pagination,
+            'Continuar' => $continuar,
+            'Mensaje' => $mensaje,            
+            'DatosRespuesta' => $datosRespuesta
         );
         return response()->json(compact('respuesta'), 200);
     }
