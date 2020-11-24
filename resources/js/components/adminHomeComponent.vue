@@ -7,9 +7,10 @@
                 </div>
                 <div class="col-md-8">
                     <h4 class="font-20 weight-500 mb-10 text-capitalize">
-                        Bienvenid@ <div class="weight-600 font-30 text-blue">Johana Loaiza</div>
+                        Bienvenid@ <div class="weight-600 font-30 text-blue" v-text="nombreUsuario"></div>
                     </h4>                    
                     <input type="hidden" :value="idpersona" id="idPersona">
+                    <input type="hidden" :value="nombreFoto" id="nombreF">
                 </div>
             </div>
         </div>
@@ -93,35 +94,54 @@
         props:['token', 'idpersona'],
         data(){
             return{
-                idPersona:'',                
+                idPersona:'',
+                nombreF: '',
+                responseData: [],                
             };
         },
         computed: {
-            ...mapState(['numeroGlobal','tokenGlobal']),
+            ...mapState(['idPersonaGlobal','tokenGlobal','nombreUsuario','nombreFoto']),
         },
         methods: {
-            ...mapMutations(['aumentar']),
-            test(){
-                console.log(this.idPersonaGlobal);
+            ...mapMutations(['']),
+             /*
+             ** fecha: 07-11-2020
+             ** descripcion: consulta los datos de la persona qu inicio sesion y los guardo en el store
+             */
+            inicio(){
+                cargandoGif(0,'Cargando datos iniciales');
+                if(this.tokenGlobal==''){window.location.replace("./"); }
                 const url = 'datosUsuario';
-                const data = { idUSuario: this.idPersonaGlobal }  
+                const data = { idUSuario: this.idPersonaGlobal };               
                 axios({
                     method: 'post',
                     url,
                     data,
                     params: {'HTTP_CONTENT_LANGUAGE': self.language},
-                    headers: {'Authorization': `Bearer ${this.tokenGlobal}`}
+                    headers: {'Authorization': 'Bearer '+this.tokenGlobal }
                 }).then(response => {
-                    console.log(response);
-                });
-            }            
+                    let resp = response.data.respuesta;
+                    if(resp['Continuar'] == 'S'){
+                        const datos = resp['DatosUsuario'][0];
+                        this.$store.state.nombreUsuario = datos['nombres']+' '+datos['apellidos'];
+                        this.$store.state.nombreFoto = datos['nombreFoto'];
+                    }else{
+                        Sweet('info',resp['Mensaje']);
+                    }                    
+                    cargandoGif(1,'');
+                }).catch(e =>{
+                    console.log(e);
+                    cargandoGif(1,'');
+                });                             
+            },    
         },
         mounted() {
             this.idPersona = $("#idPersona").val();
+            this.nombreF   = $("#nombreF").val();
             //guarda datos de sesion globalmente en el store->vuex 
             this.$store.state.tokenGlobal = this.token;
-            this.idPersonaGlobal = this.idPersona;
-            this.test();
+            this.$store.state.idPersonaGlobal = this.idPersona;            
+            this.inicio();
         }
     }
 </script>

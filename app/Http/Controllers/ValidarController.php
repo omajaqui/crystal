@@ -73,8 +73,8 @@ class ValidarController extends Controller
 
         if(array_key_exists(0,$dataUsuario)) {
             $idTipoUsuario = $request->session()->get('tipoUsuario');            
-            if($idTipoUsuario==1 || $idTipoUsuario==2 ){
-                return view('contenido.admin')
+            if($idTipoUsuario==1012 || $idTipoUsuario==2201 ){
+                return view('contenido.adminContent')
                         ->with([
                                     'Token' => $token,
                                     'IdPersona' => $dataUsuario[0]->idPersona
@@ -82,12 +82,90 @@ class ValidarController extends Controller
             }else if($idTipoUsuario==3){
 
             }
+        }else{
+            return view('login');
         }
 
         
     }
 
-    public function datosUsuario(Request $request) {
-        return $request;
+    public function datosUsuario(Request $request) 
+    {       
+        $idUsuario = $request->idUSuario;
+        $continuar = '';
+        $mensaje   = '';
+        $datos     = [];
+
+        //Consultar datos de la persona que inicio sesion paramostrar en los componentes de VUE JS
+        $datos = DB::select("SELECT *FROM crystal.personas WHERE idPersona=?",[$idUsuario]);
+
+        if (array_key_exists(0,$datos)) {
+            $continuar = 'S';
+            $mensaje   = 'Success';
+        }else{
+            $continuar = 'N';
+            $mensaje   = 'No se encontraron datos de la persona ingresada.';
+        }
+        
+        // Comun response
+        $respuesta =  array(
+            'Continuar' => $continuar,
+            'Mensaje' => $mensaje,
+            'DatosUsuario' => $datos
+        );
+        return response()->json(compact('respuesta'), 200);
+    }
+
+    public function preRegistroSocio(Request $request)
+    {
+        $accion     = $request->accion;
+        $tipoDoc    = $request->tipoDoc;
+        $doc        = $request->doc;
+        $nombres    = $request->nombres;
+        $apellidos  = $request->apellidos;
+        $correo     = $request->correo;
+        $barrio     = $request->barrio;
+        $direccion  = $request->direccion;
+        $tFijo      = $request->tFijo;
+        $celular    = $request->celular;
+        $valorCuota = $request->valorCuota;
+
+        $continuar = '';
+        $mensaje   = '';
+        $dataRespuesta = [];
+
+        if ($accion == 'preRegistro') {
+            //llamar al procedimiento que creara un registro con los datos de la persona
+            $reg = DB::select("CALL crystal.spGestionPreRegistro(?,?,?,?,?,?,?,?,?,?,?)",
+                                [
+                                    $accion,
+                                    $tipoDoc,
+                                    $doc,
+                                    $nombres,
+                                    $apellidos,
+                                    $correo,
+                                    $barrio,
+                                    $direccion,
+                                    $tFijo,
+                                    $celular,
+                                    $valorCuota
+                                ]
+                             );
+            if (array_key_exists(0,$reg)) {
+                $continuar = 'S';
+                $mensaje   = 'Success';
+                $dataRespuesta = $reg;
+            }else{
+                $continuar = 'N';
+                $mensaje   = 'No se pudo guardar el registro intenta nuevamente.';
+            }
+        }
+        // Comun response
+        $respuesta =  array(
+            'Continuar' => $continuar,
+            'Mensaje' => $mensaje,
+            'DataRespuesta' => $dataRespuesta
+        );
+        return response()->json(compact('respuesta'), 200);
     }
 }

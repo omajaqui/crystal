@@ -22,6 +22,8 @@
         "laravel-vue-datatable": "^0.5.14",
         "v-datatable-light": "^0.8.1",
         "vue": "^2.6.12",
+        "vue-multiselect": "^2.1.6",
+        "vue-select-image": "^1.9.0",
         "vuex": "^3.5.1"
     }
 }

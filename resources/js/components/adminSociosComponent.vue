@@ -12,11 +12,16 @@
                                     <button type="submit" @click="listarSocios(1,buscar)" class="btn btn-primary"><i class="icon-copy dw dw-search"></i> Buscar</button>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="input-group">                               
-                                    <button class="btn btn-primary" @click="abrilModal(1,'nuevo')"><i class="icon-copy dw dw-add-user"></i> AGREGAR SOCIO</button>
+                                    <button class="btn btn-primary" @click="abrilModal(1,'nuevo')"><i class="icon-copy dw dw-add-user"></i> AGREGAR SOCIO</button>                                    
                                 </div>
                             </div>
+                            <div class="col-md-3">
+                                <div class="input-group">                               
+                                    <button class="btn btn-primary" @click="abrilModal(3,'preR')"><i class="icon-copy dw dw-add-user"></i> PRE REGISTROS</button>                                    
+                                </div>
+                            </div>                            
                         </div>                    
                         <div class="card-body p-0">
                             <table class="table table-striped">
@@ -25,7 +30,7 @@
                                     <th style="width: 20px;">Editar</th>
                                     <th style="width: 10px;">Ver</th>
                                     <th>Nombres</th>
-                                    <th>Telefono</th>
+                                    <th>Teléfono</th>
                                     <th>Celular</th>
                                     <th>Correo</th>
                                     <th># Socio</th>
@@ -74,10 +79,6 @@
                         <button type="button" class="close" @click="cerrarModal(1)">×</button>
                     </div>
                     <div class="modal-body">
-                        <!-- <form-socio 
-                            @cerrarModal="modalAgregarSocio=0" 
-                            @refresh="listarSocios()"
-                        ></form-socio> -->
                         <form>
                             <div class="row">
                                 <!-- EJEMPLO DE CLASES AL VALIDAR LOS CAMPOS -->
@@ -172,6 +173,16 @@
                             </div>
 
                             <div class="row">
+                                <div class="col-md-12 col-sm-12">
+                                    <div class="form-group">                                        
+                                        <div class="img_usuarios" v-for="item in dataImages" :key="item.id">
+                                            <img :src="item.src" @click="selectImagen(item)"  :class="item.stilo"/>
+                                        </div>                
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">                                
                                 <div class="col-md-6 col-sm-12">
                                     <div class="form-group">
                                         <label>Teléfono fijo</label>
@@ -264,17 +275,125 @@
                     </div>                    
                 </div>
             </div>
-        </div>        
+        </div>
+
+        <!-- MODAL GESTION PRE REGISSTROS PENDIENTES DE REVISAR -->
+        <div class="modal fade bs-example-modal-lg" :class="{'mostrar' : modalPreRegistros}" role="dialog">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" v-text="titleModal"></h4>
+                        <button type="button" class="close" @click="cerrarModal(3)">×</button>
+                    </div>
+                    <div class="modal-body">                        
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>                                    
+                                    <th>Nombres</th>
+                                    <th>Documento</th>
+                                    <th>Teléfono</th>
+                                    <th>Celular</th>
+                                    <th>Correo</th>
+                                    <th>Barrio</th>
+                                    <th>Cuota Mensual</th>
+                                    <th style="width: 20px;">Aceptar</th>
+                                    <th style="width: 10px;">Rechazar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in dataPreRegistros" :key="item.idPreRegistro">
+                                    <td v-text="item.nombres+' '+item.apellidos"></td>
+                                    <td v-text="item.doc"></td>
+                                    <td v-text="item.tfijo"></td>
+                                    <td v-text="item.celular"></td>
+                                    <td v-text="item.correo"></td>
+                                    <td v-text="item.barrio"></td>
+                                    <td>{{item.valorCuota | separadorMiles}}</td>
+                                    <td><i class="icon-copy dw dw-checked aceptar" @click="sweetPR(item,'Agregar')"></i></td>
+                                    <td><i class="icon-copy dw dw-delete-3 ver" @click="sweetPR(item,'Rechazar')"></i></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" @click="cerrarModal(3)">Cerrar</button>
+                    </div>                    
+                </div>
+            </div>
+        </div>           
         
     </div>
 </template>
 
    
-<script>    
-    export default {
+<script>
+    let dataImages = [];
+    import { mapState } from 'vuex';
+    import { mapMutations } from 'vuex';
+    
+    export default {        
         data() {
             return {
                 dataSocios: [],
+                dataImages: [
+                    {
+                        id: '1',
+                        src: 'imgs/Fotos/photo1.jpg', //men
+                        stilo: 'normal',
+                        alt: 'Alt Image 1'
+                    }, 
+                    {
+                        id: '2',
+                        src: 'imgs/Fotos/photo2.jpg', //men
+                        stilo: 'normal',
+                        alt: 'Alt Image 2'
+                    }, 
+                    {
+                        id: '3',
+                        src: 'imgs/Fotos/photo3.jpg', //women
+                        stilo: 'normal',
+                        alt: 'Alt Image 3'
+                    },
+                     {
+                        id: '4',
+                        src: 'imgs/Fotos/photo4.jpg', //women
+                        stilo: 'normal',
+                        alt: 'Alt Image 4'
+                    }, 
+                    /* {
+                        id: '5',
+                        src: 'imgs/Fotos/photo5.jpg',
+                        stilo: 'normal',
+                        alt: 'Alt Image 5'
+                    }, */ 
+                    {
+                        id: '6',
+                        src: 'imgs/Fotos/photo6.jpg', //men
+                        stilo: 'normal',
+                        alt: 'Alt Image 6'
+                    } ,                    
+                    {
+                        id: '7',
+                        src: 'imgs/Fotos/photo7.jpg',
+                        stilo: 'normal',
+                        alt: 'Alt Image 7'
+                    }, 
+                    /*
+                    {
+                        id: '8',
+                        src: 'imgs/Fotos/photo8.jpg',
+                        stilo: 'normal',
+                        alt: 'Alt Image 8'
+                    }, 
+                    {
+                        id: '9',
+                        src: 'imgs/Fotos/photo9.jpg',
+                        stilo: 'normal',
+                        alt: 'Alt Image 9'
+                    } */
+                ], 
+
+                dataPreRegistros: [],
                 pagination : {
                     'total' : 0,
                     'current_page' : 0,
@@ -289,6 +408,7 @@
                 //modales
                 modalFormSocio:0,
                 modalVerSocio:0,
+                modalPreRegistros: 0,
                 titleModal:'',
 
                 //datos precargados
@@ -306,6 +426,7 @@
                 ciudad:'',
                 barrio:'',
                 direccion:'',
+                imagenSocio: '',
                 cuotaMes:'',
 
                 //validacioon de campo
@@ -324,10 +445,13 @@
                 viewContacto: '',
                 viewDirecciones:'',
                 viewAhorrroSocio:'',
+                
+                //variables al para agregar socio con datos de pre-registro
+                idPreRegistroSave: '',
             };
-        },
-
-        computed:{
+        },        
+        computed:{              
+            ...mapState(['idPersonaGlobal','tokenGlobal','nombreUsuario']),
             isActived: function(){
                 return this.pagination.current_page;
             },
@@ -358,30 +482,22 @@
         },
 
         methods: {
+            //...mapMutations(['aumentar']),
 
             /*
             ** Fecha: 3/10/2020
             ** Autor: Omar jaramillo
             ** descripcion: consulta un listado de socios segus parametros de busqueda, o trae todos los socios guardados en BD
             */
-            listarSocios(page, buscar){ 
-                loadingGif(0,'Cargando...');
-                const url = 'listarSocios';
-                axios.post(url,{
+            listarSocios(page, buscar){                 
+                cargandoGif(0,'Cargando socios');
+                const data = { 
                     accion: 'listarSocios',
                     page,
-                    buscar
-                }).then(response => {
-                    let resp=response['data']['respuesta'];
-                    if(resp['Continuar'] == 'S'){
-                        this.dataSocios = resp['Socios']['data'].filter(s => s.idTipoUsuario == 3);
-                        this.pagination = resp['pagination'];
-                    }                    
-                    loadingGif(1,'');
-                })
-                .catch(error => {
-                    console.log(error);
-                });
+                    buscar 
+                };
+                const url = 'listarSocios';
+                this.peticionComun(url,data);  
             },
 
             /*
@@ -403,14 +519,25 @@
             */
             abrilModal(level,accion){ 
                 switch (level) {
-                    case 1:                           
-                        if (accion == 'nuevo')  { this.titleModal = 'Agregar socio';  this.editando="N"; this.restablecerCampos(); }
-                        if (accion == 'editar') { this.titleModal = 'Editar datos del Socio'; this.editando="S" }
+                    case 1:
+                        this.dat                           
+                        if (accion == 'nuevo')  { this.titleModal = 'Agregar socio';  this.editando="N"; this.idPreRegistroSave=''; this.restablecerCampos(); }
+                        if (accion == 'editar') { this.titleModal = 'Editar datos del Socio'; this.editando="S"; this.idPreRegistroSave=''; }
                         this.modalFormSocio = 1;
-                        break;
+                    break;
+                    
                     case 2:
                         this.titleModal = 'Información del socio';
                         this.modalVerSocio = 1;
+                    break;
+
+                    case 3:
+                        this.cargarPreRegistros();                        
+                    break;
+
+                    case 4:
+                        this.modalFormSocio = 1;
+                    break;
 
                 }
             },
@@ -425,7 +552,35 @@
                 switch (level) {                    
                     case 1: this.modalFormSocio = 0; this.editando="N"; this.restablecerCampos(); break;
                     case 2: this.modalVerSocio  = 0; this.restablecerViewDatosSocio(); break;
+                    case 3: this.modalPreRegistros = 0; break;
                 }
+            },
+
+            /*
+            ** Fecha: 22-11-2020
+            ** Autor: Omar jaramillo
+            ** descripcion: controla visualmente la seleccion de imagen y guarda el nombre de la seleccionada
+            */
+            selectImagen(item){
+                //limpiar la valor de imagen seleccionado si es que existe
+                this.imagenSocio = '';
+                //recorrer array de imagenes para establecer en todas la propiedad stilo=normal
+                this.dataImages.map(function(i){
+                    i.stilo = 'normal';
+                    return i;
+                });
+
+                let idSelect = item.id;
+                //recorrer el array de imagenes par aestablecer propiedad stilo solo al item seleccionado
+                this.dataImages.map(function(i){
+                    if(i.id == idSelect){
+                        i.stilo = 'seleccionada';
+                    }
+                    return i;
+                });
+                
+                //establecer el nombre de la imagen seleccionada
+                this.imagenSocio = item.src;
             },
 
             /*
@@ -477,8 +632,9 @@
                 if(this.celular == '')          {this.error = true; this.errorCampo='Celular'; return;}
                 if(this.ciudad == '')           {this.error = true; this.errorCampo='Ciudad'; return;}
                 if(this.barrio == '')           {this.error = true; this.errorCampo='Barrio'; return;}
-                if(this.direccion == '')        {this.error = true; this.errorCampo='Dirección'; return;}
-                if(this.cuotaMes == '')         {this.error = true; this.errorCampo='Valor cuota mensual'; return;}  
+                if(this.direccion == '')        {this.error = true; this.errorCampo='Dirección'; return;}                
+                if(this.cuotaMes == '')         {this.error = true; this.errorCampo='Valor cuota mensual'; return;}
+                if(this.imagenSocio == '')      {this.error = true; this.errorCampo='Imagen socio'; return;}  
             },
 
             /*
@@ -486,9 +642,9 @@
             ** Autor: Omar jaramillo
             ** descripcion: inserta o actualiza datos de persona, socio, numerosasociados y usuario
             */
-            guardarSocioConfirmar(accion){
-                loadingGif(0,'Guardando');
-                let parametros = {
+            async guardarSocioConfirmar(accion){
+                cargandoGif(0,'Guardando');
+                let data = {
                     accion,
                     tipoDocumento: this.tipoDocumento,
                     documento: this.documento,
@@ -503,27 +659,12 @@
                     direccion: this.direccion,
                     cuotaMes: this.cuotaMes,
                     idPersona: this.idPersona,
-                    numeroAsociadoAnterior: this.numeroAsociadoAnterior
+                    numeroAsociadoAnterior: this.numeroAsociadoAnterior,
+                    idPreRegistro: this.idPreRegistroSave,
+                    imagenSocio: this.imagenSocio
                 };
                 let url = 'confirmarGuardar';
-                axios.post(url,parametros).then(response => {
-                    let resp=response['data']['respuesta'];
-                    if(resp['Continuar'] == 'S'){
-                        this.cerrarModal(1);
-                        this.restablecerCampos();
-                        loadingGif(1,'');
-                        this.cargarDatosForm();
-                        this.listarSocios(1,this.buscar);
-                        sweetBienHecho('Guardao Correctamente');
-                    }else{
-                        loadingGif(1,'');
-                        Sweet('info',resp['Mensaje']);
-                    } 
-                })
-                .catch(error => {
-                    console.log(error);
-                    loadingGif(1,'');
-                });
+                this.peticionComun(url,data);                 
             },
 
             /*
@@ -532,21 +673,10 @@
             ** descripcion: actualiza el listado de numeros de asociado disponibles
             */
             cargarDatosForm(){
-                loadingGif(0,'Cargando datos.');
+                cargandoGif(0,'Cargando datos.');
                 let url = 'consultarNumsAsociado';
-                axios.post(url).then(response =>{
-                    let resp = response.data.respuesta;
-                    if(resp['Continuar'] == 'S') {
-                        this.arrayNumerosAsociado = resp['Numeros'];
-                    }else{
-                        Sweet('info',resp['Mensaje']);
-                    }
-                    
-                    loadingGif(1,'');
-                }).catch(e => {
-                    console.log(e);
-                    loadingGif(1,'');
-                });
+                const data = { accion: 'consultarNumsAsociado' }
+                this.peticionComun(url,data) 
             },
 
             /*
@@ -571,6 +701,13 @@
 
                 this.numeroAsociadoAnterior = '';
                 this.idPersona = '';
+                this.imagenSocio = '';
+
+                //recorrer array de imagenes para establecer en cada una la propiedad stilo=normal
+                this.dataImages.map(function(i){
+                    i.stilo = 'normal';
+                    return i;
+                });
             },
 
             /*
@@ -622,6 +759,177 @@
                 this.viewContacto = '';
                 this.viewDirecciones = '';
                 this.viewAhorrroSocio ='';
+            },
+            
+            /*
+            ** Fecha: 20/11/2020
+            ** Autor: Omar jaramillo
+            ** descripcion: consulta los pre-registros pendientes de gestionar- actualiza dataPreRegistros
+            */
+            cargarPreRegistros(){
+                cargandoGif(0,'Consultado Pre registros');
+                const url = 'preRegitros';
+                const data = {
+                    accion: 'consultarPre'
+                };
+                this.peticionComun(url,data);                
+            },
+
+            sweetPR(item,accion){
+                let texto = '';
+                let icono = '';
+                const nombreCompleto = item.nombres + ' ' + item.apellidos; 
+                switch(accion){
+                    case 'Agregar':  texto = 'Agregar como socio a '+nombreCompleto; icono='info'; break;
+                    case 'Rechazar': texto = 'Eliminar Pre-Registro de '+nombreCompleto; icono='warning'; break;
+                }
+                Swal.fire({
+                    title: '¿Esta segur@?',
+                    text: texto,
+                    icon: icono,
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Aceptar',
+                    cancelButtonText: 'Cancelar',
+                }).then((result) => {
+                    if (result.value) {
+                        this.gestionPreRegistro(item,accion);
+                    }
+                });
+            },
+
+            /*
+            ** Fecha: 20/11/2020
+            ** Autor: Omar jaramillo
+            ** descripcion: decide accion a realizar con un pre-registro
+            */
+            gestionPreRegistro(item,accion){
+                cargandoGif(0,'Cargando.');                
+                if (accion == 'Rechazar'){
+                    const url = 'preRegitros';
+                    const data = {
+                        accion,
+                        idPreRegistro:  item.idPreRegistro,
+                        documento:      item.doc
+                    };
+                    this.peticionComun(url,data);
+                }
+
+                if (accion == 'Agregar') {
+                    cargandoGif(0,'Cargando datos del nuevo socio.');
+                    this.modalPreRegistros = 0;
+                    this.titleModal = '';
+
+                    //restablecer todos los campos de formulario agregar socio
+                    this.restablecerCampos();
+
+                    //guardar idPreRegistro
+                    this.idPreRegistroSave = item['idPreRegistro'];
+
+                    //llenar datos de formulario agregar socio con los datos del pre-registro
+                    this.tipoDocumento = item['tipoDoc'];
+                    this.documento = item['doc'];
+                    this.nombres = item['nombres'];
+                    this.apellidos = item['apellidos'];
+                    this.correo = item['correo'];
+                    this.barrio = item['barrio'];
+                    this.direccion = item.direccion;
+                    this.tFijo = item['tFijo'];
+                    this.celular = item['celular'];
+                    this.cuotaMes = item['valorCuota'];
+
+                    //abrir modal de agregar socio
+                    this.cargarDatosForm();
+                    this.abrilModal(4,'');
+                    cargandoGif(1,'');
+
+                }
+                
+            },
+
+            /*
+            ** Fecha: 20/11/2020
+            ** Autor: Omar jaramillo
+            ** descripcion: Peticion comun Axios devuelve response para ser manejado en metodo decidir()
+            */
+            peticionComun(url,data){
+                cargandoGif(0,'Cargando...')
+                axios({
+                    method: 'post',
+                    url,
+                    data,
+                    params: {'HTTP_CONTENT_LANGUAGE': self.language},
+                    headers: {'Authorization': 'Bearer '+this.tokenGlobal }
+                }).then(async response => {
+                    //validacion cuando el token expire
+                    if(response['data']['status'] == 'Token is Expired') {                        
+                        this.decidir('','Token is Expired');                        
+                    }else{
+                        let resp = response.data.respuesta;
+                        this.decidir(resp,data.accion);
+                    }
+                }).catch(e =>{
+                    console.log(e);
+                    cargandoGif(1,'');
+                });
+            },
+
+            /*
+            ** Fecha: 20/11/2020
+            ** Autor: Omar jaramillo
+            ** descripcion: recibe response de peticion axios y una accion para decidir lo que se hara
+            */
+            decidir(resp,accion){
+                // control cuando la peticion devuelve token expired
+                if(accion == 'Token is Expired'){ sweetSesionCaduca('La sesión ha caducado'); }
+                
+                if(resp['Continuar'] == 'S'){
+                    switch(accion){                      
+
+                        case 'listarSocios':                            
+                            this.dataSocios = resp['Socios']['data'].filter(s => s.idTipoUsuario == 3);
+                            this.pagination = resp['pagination'];                            
+                        break;
+
+                        case 'editarSocio':
+                        case 'guardarSocio':                            
+                            this.cerrarModal(1);
+                            this.restablecerCampos();
+                            //cargandoGif(1,'');
+                            this.cargarDatosForm();
+                            this.listarSocios(1,this.buscar);
+                            sweetBienHecho('Guardao Correctamente');                            
+                        break;
+
+                        case 'consultarNumsAsociado':                           
+                            this.arrayNumerosAsociado = resp['Numeros'];
+                        break;
+
+                        case 'consultarPre':
+                            this.dataPreRegistros = resp['DatosRespuesta'];
+                            this.titleModal = 'Pre registros en la aplicación';
+                            this.modalPreRegistros = 1;
+                        break;
+
+                        case 'Rechazar':                            
+                            this.cargarPreRegistros();
+                            setTimeout(() => {
+                                Sweet('info','Registro rechazado exitosamente!.');  
+                            }, 500);              
+                        break;
+                    }
+                }
+
+                //cerrar el loading desde cualquier accion
+                if (accion != 'Token is Expired'){
+                    cargandoGif(1,'');
+                }                
+
+                //mostar sweet si resp['Continuar']=='N' en cualquier accion
+                if(resp['Continuar'] == 'N'){
+                    Sweet('info',resp['Mensaje']);
+                }
             }
 
            
@@ -655,6 +963,33 @@
     .ver{
         font-size:20px;
         color:rgb(228, 33, 33);
-    }  
+    }
+
+    .aceptar{
+        font-size:20px;
+        color:rgb(12, 155, 48);
+    }
+
+    .img_usuarios{
+        width: 10% !important;
+        float: left !important;
+        margin-left: 3%;
+        
+    }
+    .normal{        
+        border: solid 1px blue;
+        border-radius: 10px;        
+    } 
+    .normal:hover{
+        transform: scale(1.2);
+        border: solid 2px blue;
+        cursor: pointer;
+    }
+
+    .seleccionada{
+        border: solid 4px blue;
+        border-radius: 10px;  
+        transform: scale(1.2);
+    } 
 </style>
 

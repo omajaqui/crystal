@@ -33,7 +33,7 @@
 					</li>
 					<li @click="menu=5">
 						<a href="#" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-credit-card"></span><span class="mtext">Prestamos</span>
+							<span class="micon dw dw-credit-card"></span><span class="mtext">Créditos</span>
 						</a>
 					</li>
 					<li @click="menu=6">
