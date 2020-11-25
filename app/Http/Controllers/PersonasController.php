@@ -245,24 +245,21 @@ class PersonasController extends Controller
 
     public function cambiarContrasenia(Request $request)
     {   
-        $documento  = $request->usuario;
-        $oldPass    = bcrypt($request->oldContrasenia);
+        $idPersona  = $request->id;
         $password   = bcrypt($request->newPass);
-        $key        = $request->key;        
 
         $continuar = '';
         $mensaje   = '';
         $datosRespuesta = [];
 
         $accion = 'consultarIdPersona';
-        //consultar el idPersona
-        $getId = DB::select("CALL crystal.spGestionarUsuarios(?,?)",[$accion,$documento]);        
+        //valida si el idPersona recibido existe
+        $getId = DB::select("CALL crystal.spGestionarUsuarios(?,?)",[$accion,$idPersona]);        
         if (array_key_exists(0,$getId)){
             $res = $getId[0]->res;
-            if($res == 'S'){
-                $idP = $getId[0]->idPersona;
+            if($res == 'S'){                
                 //obtener el id users
-                $getIdUser = DB::select("SELECT id FROM crystal.users WHERE idPersona=?",[$idP]);
+                $getIdUser = DB::select("SELECT id FROM crystal.users WHERE idPersona=?",[$idPersona]);
                 if(array_key_exists(0,$getIdUser)) {
                     $idU = $getIdUser[0]->id;
                     $user = User::findOrFail($idU);
@@ -270,22 +267,19 @@ class PersonasController extends Controller
                     $user->save();
 
                     $continuar = 'S';
-                    $mensaje   = 'Contraseña Cambiada Exitosamente';
+                    $mensaje   = 'Contraseña Cambiada Exitosamente.';
 
                 }else{
                     $continuar = 'N';
-                    $mensaje   = 'Ocurrió un error al restablecer la contraseña. intente nuevamente';
+                    $mensaje   = 'Ocurrió un error al restablecer la contraseña. intente nuevamente.';
                 }
             }else{
                 $continuar = 'N';
-                $mensaje   = 'Ocurrió';
-            }
-            
-                      
-
+                $mensaje   = 'Ocurrió un error. intenta de nuevo.';
+            }   
         }else{
             $continuar = 'N';
-            $mensaje   = 'Ocurrió un error al restablecer la contraseña. intenta de nuevo';
+            $mensaje   = 'Ocurrió un error al restablecer la contraseña. intenta de nuevo.';
         }        
 
         // Comun response

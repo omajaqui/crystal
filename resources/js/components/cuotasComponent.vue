@@ -41,13 +41,8 @@
             ...mapState(['idPersonaGlobal','tokenGlobal','nombreUsuario']),
         },
         methods: {
-            //...mapMutations(['aumentar']),
-            /* cerrarModal(){
-                this.$emit('cerrarModal');
-            }, */
-
-            
-                    
+            ...mapMutations(['restablecer']),           
+                               
         },
         
         mounted() {   

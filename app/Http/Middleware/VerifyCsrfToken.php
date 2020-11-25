@@ -23,6 +23,7 @@ class VerifyCsrfToken extends Middleware
         'ahorroSocio',
         'preRegistroSocio',
         'preRegitros',
-        'cambiarContrasenia'
+        'cambiarContrasenia',
+        'gestionCuotas',
     ];
 }

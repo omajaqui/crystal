@@ -72,8 +72,7 @@
     export default {
         components: { Multiselect },
         data() {
-            return {
-                socioSelecionado: '',
+            return {                
                 arraySocios: [],
                 arrayMeses: [
                     {nombre: 'Enero', id: '0'},
@@ -89,11 +88,13 @@
                     {nombre: 'Noviembre', id: '10'},
                     {nombre: 'Diciembre', id: '11'}
                 ],
+
+                //variables de formulario
+                socioSelecionado: '',
                 cuotaMensual: '',
                 mes:'',
                 valorCuotaRecivida: '',
-                descripcion:'',
-                text: 'Escribe una descripción',
+                descripcion:'',                
 
                 //validacion de campos
                 error: false,
@@ -104,7 +105,7 @@
             ...mapState(['idPersonaGlobal','tokenGlobal','nombreUsuario']),
         },
         methods: {
-            //...mapMutations(['aumentar']),
+            ...mapMutations(['restablecer']),
 
             customLabel (option) {
                 return `${option.nombreCompleto} - Documento: ${option.documento}`
@@ -123,31 +124,8 @@
                 const data = { 
                     accion: 'sociosCuotas'
                 };
-                const url = 'listarSocios';                
-                axios({
-                    method: 'post',
-                    url,
-                    data,
-                    params: {'HTTP_CONTENT_LANGUAGE': self.language},
-                    headers: {'Authorization': 'Bearer '+this.tokenGlobal }
-                }).then(response => {
-                    //validacion cuando el token expire
-                    if(response['data']['status'] == 'Token is Expired') {
-                        Sweet('info','La sesion ha caducado');
-                        window.location.href = "./";
-                        return
-                    }
-                    let resp = response.data.respuesta;
-                    if(resp['Continuar'] == 'S'){
-                        this.arraySocios = resp['Socios'];
-                    }else{
-                        Sweet('info',resp['Mensaje']);
-                    }                    
-                    cargandoGif(1,'');
-                }).catch(e =>{
-                    console.log(e);
-                    cargandoGif(1,'');
-                });
+                const url = 'listarSocios';
+                this.peticionComun(url,data); 
             },
             validarCampos(){   
                 this.error = false;
@@ -155,16 +133,109 @@
                 if (this.socioSelecionado == '' || this.socioSelecionado == []) { this.error = true; this.campoError="Socio"; return }
                 if (this.mes == '' || this.mes == []) {this.error = true; this. campoError='Mes'; return }
                 if (this.valorCuotaRecivida == '') {this.error = true; this.campoError="Valor Cuota"; return}
+                if (this.valorCuotaRecivida < this.cuotaMensual ) {
+                    this.error = true; 
+                    this.campoError="la cuota mensual minima para el socio seleccionado es de: "+format(this.cuotaMensual); 
+                    return;
+                }
 
             },
             guardarCuota(){
                 this.validarCampos();
                 if(this.error){
-                    Sweet('info','Debe completar el campo '+this.campoError);
+                    Sweet('info','Debe verificar: '+this.campoError);
                 }else{
-                    console.log("Continuar = 'S'");
+                    cargandoGif(0,'Guardando Cuota.');
+                    const url = 'gestionCuotas';
+                    const data = {
+                        accion: 'MensualGuardar',
+                        id: this.idPersonaGlobal,
+                        documentoSocio: this.socioSelecionado['documento'],
+                        mes: this.mes['nombre'],
+                        cuota: this.valorCuotaRecivida,
+                        descripcion: this.descripcion
+                    };
+                    this.peticionComun(url,data);
                 }
             },
+
+            /*
+            ** Fecha: 24/11/2020
+            ** Autor: Omar jaramillo
+            ** descripcion: limpia los campos del formulario cuota mensual
+            */
+            limpiarCampos(){
+                this.socioSelecionado = '';
+                this.cuotaMensual = '';
+                this.mes = '';
+                this.valorCuotaRecivida = '';
+                this.descripcion ='';
+            },
+
+            /*
+            ** Fecha: 20/11/2020
+            ** Autor: Omar jaramillo
+            ** descripcion: Peticion comun Axios devuelve response para ser manejado en metodo decidir()
+            */
+            peticionComun(url,data){
+                cargandoGif(0,'Cargando...')
+                axios({
+                    method: 'post',
+                    url,
+                    data,
+                    params: {'HTTP_CONTENT_LANGUAGE': self.language},
+                    headers: {'Authorization': 'Bearer '+this.tokenGlobal }
+                }).then(async response => {
+                    //validacion cuando el token expire
+                    if(response['data']['status'] == 'Token is Expired') {                        
+                        this.decidir('','Token is Expired');                        
+                    }else{
+                        let resp = response.data.respuesta;
+                        this.decidir(resp,data.accion);
+                    }
+                }).catch(e =>{
+                    console.log(e);
+                    cargandoGif(1,'');
+                });
+            },
+
+            /*
+            ** Fecha: 20/11/2020
+            ** Autor: Omar jaramillo
+            ** descripcion: recibe response de peticion axios y una accion para decidir lo que se hara
+            */
+            decidir(resp,accion){
+                // control cuando la peticion devuelve token expired
+                if(accion == 'Token is Expired'){
+                    this.restablecer(); 
+                    sweetSesionCaduca('La sesión ha caducado'); 
+                }
+                
+                if(resp['Continuar'] == 'S'){
+                    switch(accion){                      
+
+                        case 'sociosCuotas':                            
+                            this.arraySocios = resp['Socios'];                         
+                        break;
+
+                        case 'MensualGuardar':
+                            this.limpiarCampos();
+                        break;
+                        
+                    }
+                }
+
+                //cerrar el loading desde cualquier accion
+                if (accion != 'Token is Expired'){
+                    cargandoGif(1,'');
+                    if(accion == 'MensualGuardar') {Sweet('success','Cuota guardada.');}
+                }                
+
+                //mostar sweet si resp['Continuar']=='N' en cualquier accion
+                if(resp['Continuar'] == 'N'){
+                    Sweet('info',resp['Mensaje']);
+                }
+            }
         },
         
         mounted() {

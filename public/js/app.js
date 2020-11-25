@@ -1920,7 +1920,15 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -1949,9 +1957,90 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   data: function data() {
     return {};
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])(['idPersonaGlobal', 'tokenGlobal', 'nombreUsuario'])),
-  methods: {//...mapMutations(['aumentar']),
-  },
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])(['idPersonaGlobal', 'tokenGlobal', 'nombreUsuario'])),
+  methods: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapMutations"])(['restablecer'])), {}, {
+    /*
+    ** Fecha: 20/11/2020
+    ** Autor: Omar jaramillo
+    ** descripcion: Peticion comun Axios devuelve response para ser manejado en metodo decidir()
+    */
+    peticionComun: function peticionComun(url, data) {
+      var _this = this;
+
+      cargandoGif(0, 'Cargando...');
+      axios({
+        method: 'post',
+        url: url,
+        data: data,
+        params: {
+          'HTTP_CONTENT_LANGUAGE': self.language
+        },
+        headers: {
+          'Authorization': 'Bearer ' + this.tokenGlobal
+        }
+      }).then( /*#__PURE__*/function () {
+        var _ref = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(response) {
+          var resp;
+          return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+            while (1) {
+              switch (_context.prev = _context.next) {
+                case 0:
+                  //validacion cuando el token expire
+                  if (response['data']['status'] == 'Token is Expired') {
+                    _this.decidir('', 'Token is Expired');
+                  } else {
+                    resp = response.data.respuesta;
+
+                    _this.decidir(resp, data.accion);
+                  }
+
+                case 1:
+                case "end":
+                  return _context.stop();
+              }
+            }
+          }, _callee);
+        }));
+
+        return function (_x) {
+          return _ref.apply(this, arguments);
+        };
+      }())["catch"](function (e) {
+        console.log(e);
+        cargandoGif(1, '');
+      });
+    },
+
+    /*
+    ** Fecha: 20/11/2020
+    ** Autor: Omar jaramillo
+    ** descripcion: recibe response de peticion axios y una accion para decidir lo que se hara
+    */
+    decidir: function decidir(resp, accion) {
+      // control cuando la peticion devuelve token expired
+      if (accion == 'Token is Expired') {
+        this.restablecer();
+        sweetSesionCaduca('La sesión ha caducado');
+      }
+
+      if (resp['Continuar'] == 'S') {
+        switch (accion) {
+          case '':
+            break;
+        }
+      } //cerrar el loading desde cualquier accion
+
+
+      if (accion != 'Token is Expired') {
+        cargandoGif(1, '');
+      } //mostar sweet si resp['Continuar']=='N' en cualquier accion
+
+
+      if (resp['Continuar'] == 'N') {
+        Sweet('info', resp['Mensaje']);
+      }
+    }
+  }),
   mounted: function mounted() {
     console.log('Component mounted.');
   }
@@ -2501,6 +2590,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           Sweet('info', 'Error inesperado, Intente de nuevo');
         }
       })["catch"](function (error) {
+        loadingGif(1, '');
         e = JSON.stringify(error);
         Sweet('error', e);
       });
@@ -2541,7 +2631,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -2644,18 +2742,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     return {
       idPersona: '',
       nombreF: '',
-      responseData: []
+      responseData: [],
+      cantidadSocios: 0
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])(['idPersonaGlobal', 'tokenGlobal', 'nombreUsuario', 'nombreFoto'])),
-  methods: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])([''])), {}, {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])(['idPersonaGlobal', 'tokenGlobal', 'nombreUsuario', 'nombreFoto'])),
+  methods: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapMutations"])(['restablecer'])), {}, {
     /*
     ** fecha: 07-11-2020
     ** descripcion: consulta los datos de la persona qu inicio sesion y los guardo en el store
     */
     inicio: function inicio() {
-      var _this = this;
-
       cargandoGif(0, 'Cargando datos iniciales');
 
       if (this.tokenGlobal == '') {
@@ -2664,8 +2761,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       var url = 'datosUsuario';
       var data = {
+        accion: 'datosU',
         idUSuario: this.idPersonaGlobal
       };
+      this.peticionComun(url, data);
+    },
+
+    /*
+    ** Fecha: 20/11/2020
+    ** Autor: Omar jaramillo
+    ** descripcion: Peticion comun Axios devuelve response para ser manejado en metodo decidir()
+    */
+    peticionComun: function peticionComun(url, data) {
+      var _this = this;
+
+      cargandoGif(0, 'Cargando...');
       axios({
         method: 'post',
         url: url,
@@ -2676,22 +2786,71 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         headers: {
           'Authorization': 'Bearer ' + this.tokenGlobal
         }
-      }).then(function (response) {
-        var resp = response.data.respuesta;
+      }).then( /*#__PURE__*/function () {
+        var _ref = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(response) {
+          var resp;
+          return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+            while (1) {
+              switch (_context.prev = _context.next) {
+                case 0:
+                  //validacion cuando el token expire
+                  if (response['data']['status'] == 'Token is Expired') {
+                    _this.decidir('', 'Token is Expired');
+                  } else {
+                    resp = response.data.respuesta;
 
-        if (resp['Continuar'] == 'S') {
-          var datos = resp['DatosUsuario'][0];
-          _this.$store.state.nombreUsuario = datos['nombres'] + ' ' + datos['apellidos'];
-          _this.$store.state.nombreFoto = datos['nombreFoto'];
-        } else {
-          Sweet('info', resp['Mensaje']);
-        }
+                    _this.decidir(resp, data.accion);
+                  }
 
-        cargandoGif(1, '');
-      })["catch"](function (e) {
+                case 1:
+                case "end":
+                  return _context.stop();
+              }
+            }
+          }, _callee);
+        }));
+
+        return function (_x) {
+          return _ref.apply(this, arguments);
+        };
+      }())["catch"](function (e) {
         console.log(e);
         cargandoGif(1, '');
       });
+    },
+
+    /*
+    ** Fecha: 20/11/2020
+    ** Autor: Omar jaramillo
+    ** descripcion: recibe response de peticion axios y una accion para decidir lo que se hara
+    */
+    decidir: function decidir(resp, accion) {
+      // control cuando la peticion devuelve token expired
+      if (accion == 'Token is Expired') {
+        this.restablecer();
+        sweetSesionCaduca('La sesión ha caducado');
+      }
+
+      if (resp['Continuar'] == 'S') {
+        switch (accion) {
+          case 'datosU':
+            var datos = resp['DatosUsuario'][0];
+            this.$store.state.nombreUsuario = datos['nombres'] + ' ' + datos['apellidos'];
+            this.$store.state.nombreFoto = datos['nombreFoto'];
+            this.cantidadSocios = resp['Cantidad'];
+            break;
+        }
+      } //cerrar el loading desde cualquier accion
+
+
+      if (accion != 'Token is Expired') {
+        cargandoGif(1, '');
+      } //mostar sweet si resp['Continuar']=='N' en cualquier accion
+
+
+      if (resp['Continuar'] == 'N') {
+        Sweet('info', resp['Mensaje']);
+      }
     }
   }),
   mounted: function mounted() {
@@ -4279,12 +4438,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])(['idPersonaGlobal', 'tokenGlobal', 'nombreUsuario'])),
-  methods: {//...mapMutations(['aumentar']),
-
-    /* cerrarModal(){
-        this.$emit('cerrarModal');
-    }, */
-  },
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])(['restablecer'])),
   mounted: function mounted() {}
 });
 
@@ -4299,9 +4453,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-multiselect */ "./node_modules/vue-multiselect/dist/vue-multiselect.min.js");
-/* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vue_multiselect__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-multiselect */ "./node_modules/vue-multiselect/dist/vue-multiselect.min.js");
+/* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(vue_multiselect__WEBPACK_IMPORTED_MODULE_2__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -4380,11 +4542,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
-    Multiselect: vue_multiselect__WEBPACK_IMPORTED_MODULE_1___default.a
+    Multiselect: vue_multiselect__WEBPACK_IMPORTED_MODULE_2___default.a
   },
   data: function data() {
     return {
-      socioSelecionado: '',
       arraySocios: [],
       arrayMeses: [{
         nombre: 'Enero',
@@ -4423,19 +4584,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         nombre: 'Diciembre',
         id: '11'
       }],
+      //variables de formulario
+      socioSelecionado: '',
       cuotaMensual: '',
       mes: '',
       valorCuotaRecivida: '',
       descripcion: '',
-      text: 'Escribe una descripción',
       //validacion de campos
       error: false,
       campoError: ''
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])(['idPersonaGlobal', 'tokenGlobal', 'nombreUsuario'])),
-  methods: {
-    //...mapMutations(['aumentar']),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])(['idPersonaGlobal', 'tokenGlobal', 'nombreUsuario'])),
+  methods: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapMutations"])(['restablecer'])), {}, {
     customLabel: function customLabel(option) {
       return "".concat(option.nombreCompleto, " - Documento: ").concat(option.documento);
     },
@@ -4449,44 +4610,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }, 500);
     },
     listarSoicos: function listarSoicos() {
-      var _this2 = this;
-
       cargandoGif(0, 'Cargando socios');
       var data = {
         accion: 'sociosCuotas'
       };
       var url = 'listarSocios';
-      axios({
-        method: 'post',
-        url: url,
-        data: data,
-        params: {
-          'HTTP_CONTENT_LANGUAGE': self.language
-        },
-        headers: {
-          'Authorization': 'Bearer ' + this.tokenGlobal
-        }
-      }).then(function (response) {
-        //validacion cuando el token expire
-        if (response['data']['status'] == 'Token is Expired') {
-          Sweet('info', 'La sesion ha caducado');
-          window.location.href = "./";
-          return;
-        }
-
-        var resp = response.data.respuesta;
-
-        if (resp['Continuar'] == 'S') {
-          _this2.arraySocios = resp['Socios'];
-        } else {
-          Sweet('info', resp['Mensaje']);
-        }
-
-        cargandoGif(1, '');
-      })["catch"](function (e) {
-        console.log(e);
-        cargandoGif(1, '');
-      });
+      this.peticionComun(url, data);
     },
     validarCampos: function validarCampos() {
       this.error = false;
@@ -4509,17 +4638,137 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.campoError = "Valor Cuota";
         return;
       }
+
+      if (this.valorCuotaRecivida < this.cuotaMensual) {
+        this.error = true;
+        this.campoError = "la cuota mensual minima para el socio seleccionado es de: " + format(this.cuotaMensual);
+        return;
+      }
     },
     guardarCuota: function guardarCuota() {
       this.validarCampos();
 
       if (this.error) {
-        Sweet('info', 'Debe completar el campo ' + this.campoError);
+        Sweet('info', 'Debe verificar: ' + this.campoError);
       } else {
-        console.log("Continuar = 'S'");
+        cargandoGif(0, 'Guardando Cuota.');
+        var url = 'gestionCuotas';
+        var data = {
+          accion: 'MensualGuardar',
+          id: this.idPersonaGlobal,
+          documentoSocio: this.socioSelecionado['documento'],
+          mes: this.mes['nombre'],
+          cuota: this.valorCuotaRecivida,
+          descripcion: this.descripcion
+        };
+        this.peticionComun(url, data);
+      }
+    },
+
+    /*
+    ** Fecha: 24/11/2020
+    ** Autor: Omar jaramillo
+    ** descripcion: limpia los campos del formulario cuota mensual
+    */
+    limpiarCampos: function limpiarCampos() {
+      this.socioSelecionado = '';
+      this.cuotaMensual = '';
+      this.mes = '';
+      this.valorCuotaRecivida = '';
+      this.descripcion = '';
+    },
+
+    /*
+    ** Fecha: 20/11/2020
+    ** Autor: Omar jaramillo
+    ** descripcion: Peticion comun Axios devuelve response para ser manejado en metodo decidir()
+    */
+    peticionComun: function peticionComun(url, data) {
+      var _this2 = this;
+
+      cargandoGif(0, 'Cargando...');
+      axios({
+        method: 'post',
+        url: url,
+        data: data,
+        params: {
+          'HTTP_CONTENT_LANGUAGE': self.language
+        },
+        headers: {
+          'Authorization': 'Bearer ' + this.tokenGlobal
+        }
+      }).then( /*#__PURE__*/function () {
+        var _ref = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(response) {
+          var resp;
+          return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+            while (1) {
+              switch (_context.prev = _context.next) {
+                case 0:
+                  //validacion cuando el token expire
+                  if (response['data']['status'] == 'Token is Expired') {
+                    _this2.decidir('', 'Token is Expired');
+                  } else {
+                    resp = response.data.respuesta;
+
+                    _this2.decidir(resp, data.accion);
+                  }
+
+                case 1:
+                case "end":
+                  return _context.stop();
+              }
+            }
+          }, _callee);
+        }));
+
+        return function (_x) {
+          return _ref.apply(this, arguments);
+        };
+      }())["catch"](function (e) {
+        console.log(e);
+        cargandoGif(1, '');
+      });
+    },
+
+    /*
+    ** Fecha: 20/11/2020
+    ** Autor: Omar jaramillo
+    ** descripcion: recibe response de peticion axios y una accion para decidir lo que se hara
+    */
+    decidir: function decidir(resp, accion) {
+      // control cuando la peticion devuelve token expired
+      if (accion == 'Token is Expired') {
+        this.restablecer();
+        sweetSesionCaduca('La sesión ha caducado');
+      }
+
+      if (resp['Continuar'] == 'S') {
+        switch (accion) {
+          case 'sociosCuotas':
+            this.arraySocios = resp['Socios'];
+            break;
+
+          case 'MensualGuardar':
+            this.limpiarCampos();
+            break;
+        }
+      } //cerrar el loading desde cualquier accion
+
+
+      if (accion != 'Token is Expired') {
+        cargandoGif(1, '');
+
+        if (accion == 'MensualGuardar') {
+          Sweet('success', 'Cuota guardada.');
+        }
+      } //mostar sweet si resp['Continuar']=='N' en cualquier accion
+
+
+      if (resp['Continuar'] == 'N') {
+        Sweet('info', resp['Mensaje']);
       }
     }
-  },
+  }),
   mounted: function mounted() {
     this.listarSoicos();
   }
@@ -5203,17 +5452,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -5231,9 +5469,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       //variables modal
       modalPass: 0,
       titleModal: '',
-      //campos formulario cambiar contraseña
-      usuario: '',
-      pass: '',
+      //campos formulario cambiar contraseña                
       newPass: '',
       confirmPass: '',
       //validacion de campos formulario
@@ -5285,11 +5521,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     verCampo: function verCampo(campo) {
       switch (campo) {
-        case 'PassActual':
-          this.tipoPassActual = this.tipoPassActual == 'password' ? 'text' : 'password';
-          this.iconoEye = this.iconoEye == 'icon-copy fa fa-eye' ? 'icon-copy fa fa-eye-slash' : 'icon-copy fa fa-eye';
-          break;
-
         case 'NewPass':
           this.tipoNewPass = this.tipoNewPass == 'password' ? 'text' : 'password';
           this.iconoEyeNew = this.iconoEyeNew == 'icon-copy fa fa-eye' ? 'icon-copy fa fa-eye-slash' : 'icon-copy fa fa-eye';
@@ -5305,18 +5536,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     validarCampos: function validarCampos() {
       this.error = false;
       this.campoError = '';
-
-      if (this.usuario == '') {
-        this.error = true;
-        this.campoError = 'Usuario';
-        return;
-      }
-
-      if (this.pass == '') {
-        this.error = true;
-        this.campoError = 'Contraseña Actual';
-        return;
-      }
 
       if (this.newPass == '') {
         this.error = true;
@@ -5353,9 +5572,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         var url = 'cambiarContrasenia';
         var data = {
           accion: 'cambiarContrasenia',
-          usuario: this.usuario,
-          oldContrasenia: this.pass,
-          newPass: this.newPass
+          newPass: this.newPass,
+          id: this.idPersonaGlobal
         };
         this.peticionComun(url, data);
       }
@@ -5367,12 +5585,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     ** descripcion: restablece los campos utilizados en el formulario para cambiar la contraseña
     */
     restablecerCamposCambiarContraseña: function restablecerCamposCambiarContraseA() {
-      cargandoGif(0, 'Cargando.');
-      this.usuario = '';
-      this.pass = '';
+      this.tipoNewPass = 'password';
+      this.iconoEyeNew = 'icon-copy fa fa-eye';
       this.newPass = '';
       this.confirmPass = '';
-      cargandoGif(1, '');
     },
 
     /*
@@ -5441,7 +5657,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (resp['Continuar'] == 'S') {
         switch (accion) {
           case 'cambiarContrasenia':
-            console.log(resp);
+            this.restablecerCamposCambiarContraseña();
+            this.modalPass = 0;
+            this.titleModal = '';
             break;
         }
       } //cerrar el loading desde cualquier accion
@@ -5449,6 +5667,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       if (accion != 'Token is Expired') {
         cargandoGif(1, '');
+
+        if (accion == 'cambiarContrasenia') {
+          Sweet('info', resp['Mensaje']);
+        }
       } //mostar sweet si resp['Continuar']=='N' en cualquier accion
 
 
@@ -36600,9 +36822,34 @@ var render = function() {
       ])
     ]),
     _vm._v(" "),
-    _vm._m(1),
+    _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-xl-3 mb-30" }, [
+        _c("div", { staticClass: "card-box height-100-p widget-style1" }, [
+          _c("div", { staticClass: "d-flex flex-wrap align-items-center" }, [
+            _vm._m(1),
+            _vm._v(" "),
+            _c("div", { staticClass: "widget-data" }, [
+              _c("div", {
+                staticClass: "h4 mb-0",
+                domProps: { textContent: _vm._s(_vm.cantidadSocios) }
+              }),
+              _vm._v(" "),
+              _c("div", { staticClass: "weight-600 font-14" }, [
+                _vm._v("Socios")
+              ])
+            ])
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _vm._m(2),
+      _vm._v(" "),
+      _vm._m(3),
+      _vm._v(" "),
+      _vm._m(4)
+    ]),
     _vm._v(" "),
-    _vm._m(2)
+    _vm._m(5)
   ])
 }
 var staticRenderFns = [
@@ -36618,79 +36865,71 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row" }, [
-      _c("div", { staticClass: "col-xl-3 mb-30" }, [
-        _c("div", { staticClass: "card-box height-100-p widget-style1" }, [
-          _c("div", { staticClass: "d-flex flex-wrap align-items-center" }, [
-            _c("div", { staticClass: "progress-data" }, [
-              _c("img", {
-                attrs: { src: "vendors/images/product-1.jpg", alt: "" }
-              })
-            ]),
+    return _c("div", { staticClass: "progress-data" }, [
+      _c("img", { attrs: { src: "vendors/images/product-1.jpg", alt: "" } })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-xl-3 mb-30" }, [
+      _c("div", { staticClass: "card-box height-100-p widget-style1" }, [
+        _c("div", { staticClass: "d-flex flex-wrap align-items-center" }, [
+          _c("div", { staticClass: "progress-data" }, [
+            _c("img", { attrs: { src: "vendors/images/success.png", alt: "" } })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "widget-data" }, [
+            _c("div", { staticClass: "h4 mb-0" }, [_vm._v("Cuotas")]),
             _vm._v(" "),
-            _c("div", { staticClass: "widget-data" }, [
-              _c("div", { staticClass: "h4 mb-0" }, [_vm._v("52")]),
-              _vm._v(" "),
-              _c("div", { staticClass: "weight-600 font-14" }, [
-                _vm._v("Socios")
-              ])
+            _c("div", { staticClass: "weight-600 font-14" }, [
+              _vm._v("Registrar")
             ])
           ])
         ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-xl-3 mb-30" }, [
-        _c("div", { staticClass: "card-box height-100-p widget-style1" }, [
-          _c("div", { staticClass: "d-flex flex-wrap align-items-center" }, [
-            _c("div", { staticClass: "progress-data" }, [
-              _c("img", {
-                attrs: { src: "vendors/images/success.png", alt: "" }
-              })
-            ]),
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-xl-3 mb-30" }, [
+      _c("div", { staticClass: "card-box height-100-p widget-style1" }, [
+        _c("div", { staticClass: "d-flex flex-wrap align-items-center" }, [
+          _c("div", { staticClass: "progress-data" }, [
+            _c("img", {
+              attrs: { src: "vendors/images/product-img4.jpg", alt: "" }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "widget-data" }, [
+            _c("div", { staticClass: "h4 mb-0" }, [_vm._v("Actividades")]),
             _vm._v(" "),
-            _c("div", { staticClass: "widget-data" }, [
-              _c("div", { staticClass: "h4 mb-0" }, [_vm._v("Cuotas")]),
-              _vm._v(" "),
-              _c("div", { staticClass: "weight-600 font-14" }, [
-                _vm._v("Registrar")
-              ])
-            ])
+            _c("div", { staticClass: "weight-600 font-14" }, [_vm._v("Ver")])
           ])
         ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-xl-3 mb-30" }, [
-        _c("div", { staticClass: "card-box height-100-p widget-style1" }, [
-          _c("div", { staticClass: "d-flex flex-wrap align-items-center" }, [
-            _c("div", { staticClass: "progress-data" }, [
-              _c("img", {
-                attrs: { src: "vendors/images/product-img4.jpg", alt: "" }
-              })
-            ]),
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-xl-3 mb-30" }, [
+      _c("div", { staticClass: "card-box height-100-p widget-style1" }, [
+        _c("div", { staticClass: "d-flex flex-wrap align-items-center" }, [
+          _c("div", { staticClass: "progress-data" }, [
+            _c("img", {
+              attrs: { src: "vendors/images/product-2.jpg", alt: "" }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "widget-data" }, [
+            _c("div", { staticClass: "h4 mb-0" }, [_vm._v("Seguimiento")]),
             _vm._v(" "),
-            _c("div", { staticClass: "widget-data" }, [
-              _c("div", { staticClass: "h4 mb-0" }, [_vm._v("Actividades")]),
-              _vm._v(" "),
-              _c("div", { staticClass: "weight-600 font-14" }, [_vm._v("Ver")])
-            ])
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-xl-3 mb-30" }, [
-        _c("div", { staticClass: "card-box height-100-p widget-style1" }, [
-          _c("div", { staticClass: "d-flex flex-wrap align-items-center" }, [
-            _c("div", { staticClass: "progress-data" }, [
-              _c("img", {
-                attrs: { src: "vendors/images/product-2.jpg", alt: "" }
-              })
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "widget-data" }, [
-              _c("div", { staticClass: "h4 mb-0" }, [_vm._v("Seguimiento")]),
-              _vm._v(" "),
-              _c("div", { staticClass: "weight-600 font-14" }, [_vm._v("Ver")])
-            ])
+            _c("div", { staticClass: "weight-600 font-14" }, [_vm._v("Ver")])
           ])
         ])
       ])
@@ -39242,142 +39481,6 @@ var render = function() {
             _vm._v(" "),
             _c("div", { staticClass: "modal-body" }, [
               _c("div", { staticClass: "row" }, [
-                _c(
-                  "div",
-                  { staticClass: "input-group custom col-md-6 col-sm-12" },
-                  [
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.usuario,
-                          expression: "usuario"
-                        }
-                      ],
-                      staticClass: "form-control form-control-lg",
-                      attrs: { type: "text", placeholder: "Usuario" },
-                      domProps: { value: _vm.usuario },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.usuario = $event.target.value
-                        }
-                      }
-                    })
-                  ]
-                ),
-                _vm._v(" "),
-                _c(
-                  "div",
-                  { staticClass: "input-group custom col-md-6 col-sm-12" },
-                  [
-                    _vm.tipoPassActual === "checkbox"
-                      ? _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.pass,
-                              expression: "pass"
-                            }
-                          ],
-                          staticClass: "form-control form-control-lg",
-                          attrs: {
-                            placeholder: "Contraseña Actual",
-                            type: "checkbox"
-                          },
-                          domProps: {
-                            checked: Array.isArray(_vm.pass)
-                              ? _vm._i(_vm.pass, null) > -1
-                              : _vm.pass
-                          },
-                          on: {
-                            change: function($event) {
-                              var $$a = _vm.pass,
-                                $$el = $event.target,
-                                $$c = $$el.checked ? true : false
-                              if (Array.isArray($$a)) {
-                                var $$v = null,
-                                  $$i = _vm._i($$a, $$v)
-                                if ($$el.checked) {
-                                  $$i < 0 && (_vm.pass = $$a.concat([$$v]))
-                                } else {
-                                  $$i > -1 &&
-                                    (_vm.pass = $$a
-                                      .slice(0, $$i)
-                                      .concat($$a.slice($$i + 1)))
-                                }
-                              } else {
-                                _vm.pass = $$c
-                              }
-                            }
-                          }
-                        })
-                      : _vm.tipoPassActual === "radio"
-                      ? _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.pass,
-                              expression: "pass"
-                            }
-                          ],
-                          staticClass: "form-control form-control-lg",
-                          attrs: {
-                            placeholder: "Contraseña Actual",
-                            type: "radio"
-                          },
-                          domProps: { checked: _vm._q(_vm.pass, null) },
-                          on: {
-                            change: function($event) {
-                              _vm.pass = null
-                            }
-                          }
-                        })
-                      : _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.pass,
-                              expression: "pass"
-                            }
-                          ],
-                          staticClass: "form-control form-control-lg",
-                          attrs: {
-                            placeholder: "Contraseña Actual",
-                            type: _vm.tipoPassActual
-                          },
-                          domProps: { value: _vm.pass },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
-                              }
-                              _vm.pass = $event.target.value
-                            }
-                          }
-                        }),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "input-group-append custom" }, [
-                      _c("span", { staticClass: "input-group-text ojo" }, [
-                        _c("i", {
-                          class: _vm.iconoEye,
-                          on: {
-                            click: function($event) {
-                              return _vm.verCampo("PassActual")
-                            }
-                          }
-                        })
-                      ])
-                    ])
-                  ]
-                ),
-                _vm._v(" "),
                 _c(
                   "div",
                   { staticClass: "input-group custom col-md-6 col-sm-12" },

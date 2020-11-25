@@ -99,6 +99,13 @@ class ValidarController extends Controller
         //Consultar datos de la persona que inicio sesion paramostrar en los componentes de VUE JS
         $datos = DB::select("SELECT *FROM crystal.personas WHERE idPersona=?",[$idUsuario]);
 
+        //obtener cantidad de socios activos
+        $getCantidadSocios = DB::select("SELECT COUNT(idSocio) AS cant FROM `socios` WHERE idEstado=1");
+        $cantidad = 0;
+        if(array_key_exists(0,$getCantidadSocios)) {
+            $cantidad = $getCantidadSocios[0]->cant;
+        }
+
         if (array_key_exists(0,$datos)) {
             $continuar = 'S';
             $mensaje   = 'Success';
@@ -107,11 +114,12 @@ class ValidarController extends Controller
             $mensaje   = 'No se encontraron datos de la persona ingresada.';
         }
         
-        // Comun response
+        // Comun response        
         $respuesta =  array(
             'Continuar' => $continuar,
             'Mensaje' => $mensaje,
-            'DatosUsuario' => $datos
+            'DatosUsuario' => $datos,
+            'Cantidad' => $cantidad
         );
         return response()->json(compact('respuesta'), 200);
     }

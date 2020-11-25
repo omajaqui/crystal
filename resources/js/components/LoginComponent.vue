@@ -480,6 +480,7 @@
                             Sweet('info','Error inesperado, Intente de nuevo');
                         }
                     }).catch(error =>{
+                        loadingGif(1,'');
                         e=JSON.stringify(error);
                         Sweet('error',e);
                     });

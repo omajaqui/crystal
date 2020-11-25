@@ -36,18 +36,7 @@
                         <button type="button" class="close" @click="cerrarModal(1)">×</button>
                     </div>
                     <div class="modal-body">                        
-                        <div class="row">
-
-                            <div class="input-group custom col-md-6 col-sm-12">
-                                <input type="text" class="form-control form-control-lg" v-model="usuario" placeholder="Usuario">                                
-                            </div>
-
-                            <div class="input-group custom col-md-6 col-sm-12">
-                                <input :type="tipoPassActual" class="form-control form-control-lg" v-model="pass" placeholder="Contraseña Actual">
-                                <div class="input-group-append custom">
-                                    <span class="input-group-text ojo"><i :class="iconoEye"  @click="verCampo('PassActual')"></i></span>
-                                </div>
-                            </div>
+                        <div class="row">                          
 
                             <div class="input-group custom col-md-6 col-sm-12">
                                 <input :type="tipoNewPass" class="form-control form-control-lg" v-model="newPass" placeholder="Contraseña Nueva">
@@ -89,9 +78,7 @@
                 modalPass: 0,
                 titleModal: '',
 
-                //campos formulario cambiar contraseña
-                usuario: '',
-                pass: '',
+                //campos formulario cambiar contraseña                
                 newPass: '',
                 confirmPass: '',
 
@@ -148,12 +135,7 @@
             },
 
             verCampo(campo){
-                switch(campo){
-                    case 'PassActual':
-                        this.tipoPassActual = (this.tipoPassActual=='password')? 'text' : 'password';
-                        this.iconoEye = (this.iconoEye == 'icon-copy fa fa-eye')? 'icon-copy fa fa-eye-slash' : 'icon-copy fa fa-eye';
-                    break;
-
+                switch(campo){  
                     case 'NewPass':
                         this.tipoNewPass = (this.tipoNewPass == 'password')? 'text' : 'password';
                         this.iconoEyeNew = (this.iconoEyeNew == 'icon-copy fa fa-eye')? 'icon-copy fa fa-eye-slash' : 'icon-copy fa fa-eye';
@@ -169,9 +151,7 @@
             */
             validarCampos(){
                 this.error = false;
-                this.campoError = '';
-                if(this.usuario == '') {this.error=true; this.campoError='Usuario'; return; }
-                if(this.pass == '') {this.error=true; this.campoError='Contraseña Actual'; return; }
+                this.campoError = '';               
                 if(this.newPass == '') {this.error=true; this.campoError='Contraseña nueva'; return; }
                 if(this.confirmPass == '') {this.error=true; this.campoError='Confirmar Contraseña'; return; }
                 //validar si la contraseña nueva y confirmar contraseña son iguales
@@ -192,9 +172,8 @@
                     const url = 'cambiarContrasenia';
                     const data = {
                         accion: 'cambiarContrasenia',
-                        usuario: this.usuario,
-                        oldContrasenia: this.pass,
-                        newPass: this.newPass
+                        newPass: this.newPass,
+                        id: this.idPersonaGlobal,
                     }
                     this.peticionComun(url,data);
                 }
@@ -206,12 +185,10 @@
             ** descripcion: restablece los campos utilizados en el formulario para cambiar la contraseña
             */
             restablecerCamposCambiarContraseña(){
-                cargandoGif(0,'Cargando.');
-                this.usuario = '';
-                this.pass = '';
+                this.tipoNewPass ='password';
+                this.iconoEyeNew = 'icon-copy fa fa-eye';                
                 this.newPass = '';
                 this.confirmPass = '';
-                cargandoGif(1,'');
             },
 
             /*
@@ -252,8 +229,10 @@
                 
                 if(resp['Continuar'] == 'S'){
                     switch(accion){ 
-                        case 'cambiarContrasenia':                            
-                            console.log(resp);                            
+                        case 'cambiarContrasenia':
+                            this.restablecerCamposCambiarContraseña();                            
+                            this.modalPass = 0;
+                            this.titleModal = '';   
                         break;
                     }
                 }
@@ -261,6 +240,7 @@
                 //cerrar el loading desde cualquier accion
                 if (accion != 'Token is Expired'){
                     cargandoGif(1,'');
+                    if(accion == 'cambiarContrasenia'){Sweet('info',resp['Mensaje']);}
                 }                
 
                 //mostar sweet si resp['Continuar']=='N' en cualquier accion

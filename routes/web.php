@@ -37,7 +37,10 @@ Route::group(['middleware' => 'jwt.verify'], function () {
     Route::post('/confirmarGuardar','PersonasController@personas');
     Route::post('/consultarNumsAsociado','ConfiguracionController@consultarNumsAsociado');
     Route::post('/cambiarContrasenia','PersonasController@cambiarContrasenia');
-    
+
+    //CUOTAS guardarCuota
+    Route::post('/gestionCuotas','CuotasController@gestionCuotas');
+
     //PRESTAMOS 
     Route::post('/ahorroSocio','PrestamosController@ahorroSocio');
     Route::post('/crearCredito','PrestamosController@Credito');
