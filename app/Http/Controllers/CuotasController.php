@@ -44,4 +44,35 @@ class CuotasController extends Controller
         );
         return response()->json(compact('respuesta'), 200);
     }
+
+    public function pollaMensual(Request $request)
+    {
+        $continuar = '';
+        $mensaje   = '';
+        $datosRespuesta = [];
+
+        $accion     = $request->accion;
+        $docSocio    = $request->doc;
+        $idPersona  = $request->idp;
+
+        if ($accion == 'guardarPolla') {
+            $guardar = DB::select("CALL crystal.spGestionarActividades(?,?,?)",[$accion,$docSocio,$idPersona]);
+
+            if(array_key_exists(0,$guardar)) {
+                $continuar = $guardar[0]->res;
+                $mensaje   = $guardar[0]->mensaje;
+            }else{
+                $continuar = 'N';
+                $mensaje   = 'No se pudo guardar. informa de este error';
+            }
+        }
+
+        // Comun response
+        $respuesta =  array(
+            'Continuar' => $continuar,
+            'Mensaje' => $mensaje,            
+            'DatosRespuesta' => $datosRespuesta
+        );
+        return response()->json(compact('respuesta'), 200);
+    }
 }

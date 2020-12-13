@@ -133,11 +133,12 @@
                 if (this.socioSelecionado == '' || this.socioSelecionado == []) { this.error = true; this.campoError="Socio"; return }
                 if (this.mes == '' || this.mes == []) {this.error = true; this. campoError='Mes'; return }
                 if (this.valorCuotaRecivida == '') {this.error = true; this.campoError="Valor Cuota"; return}
-                if (this.valorCuotaRecivida < this.cuotaMensual ) {
+                
+                /* if (this.valorCuotaRecivida < this.cuotaMensual ) {
                     this.error = true; 
                     this.campoError="la cuota mensual minima para el socio seleccionado es de: "+format(this.cuotaMensual); 
                     return;
-                }
+                } */
 
             },
             guardarCuota(){

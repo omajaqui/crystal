@@ -80,7 +80,11 @@ class ValidarController extends Controller
                                     'IdPersona' => $dataUsuario[0]->idPersona
                               ]);
             }else if($idTipoUsuario==3){
-
+                return view('contenido.socioContent')
+                        ->with([
+                                    'Token' => $token,
+                                    'IdPersona' => $dataUsuario[0]->idPersona
+                                ]);
             }
         }else{
             return view('login');
@@ -89,15 +93,26 @@ class ValidarController extends Controller
         
     }
 
+    /*
+    ** Autor: Omar jaramillo
+    ** Fecha: 30-11-2020
+    ** Descripcion: consulta informacion basica del usuario que inicio sesion 
+    */
     public function datosUsuario(Request $request) 
     {       
         $idUsuario = $request->idUSuario;
         $continuar = '';
         $mensaje   = '';
         $datos     = [];
+        $primerInicio = '';
 
-        //Consultar datos de la persona que inicio sesion paramostrar en los componentes de VUE JS
-        $datos = DB::select("SELECT *FROM crystal.personas WHERE idPersona=?",[$idUsuario]);
+        //Consultar datos de la persona que inicio sesion paramostrar en los componentes de VUE JS 
+        //consulta si es la primera vez que inicia sesion
+        //consulta el ahorro total del socio
+        $datos = DB::select("CALL crystal.sp_Gestionarpersonas('datosUsuario','','','','','','','','','','','','',?,'','')",[$idUsuario]);
+        if (array_key_exists(0,$datos)){
+            $primerInicio = $datos[0]->primerInicio;
+        }
 
         //obtener cantidad de socios activos
         $getCantidadSocios = DB::select("SELECT COUNT(idSocio) AS cant FROM `socios` WHERE idEstado=1");

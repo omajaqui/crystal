@@ -8,8 +8,19 @@ use Illuminate\Support\Facades\Hash;
 
 use App\Models\User;
 
+    /*
+    ** Autor:
+    ** Fecha:
+    ** Descripcion:
+    */
+
 class PersonasController extends Controller
-{
+{   
+    /*
+    ** Autor:
+    ** Fecha:
+    ** Descripcion:
+    */
     public function personas(Request $request)
     {
         $accion = $request->accion;
@@ -248,11 +259,13 @@ class PersonasController extends Controller
         $idPersona  = $request->id;
         $password   = bcrypt($request->newPass);
 
+        $pi = $request->pi; //parametro que identifica si es cambio de contraseña en primer inicio
+        $accion = 'consultarIdPersona';
+
         $continuar = '';
         $mensaje   = '';
         $datosRespuesta = [];
-
-        $accion = 'consultarIdPersona';
+        
         //valida si el idPersona recibido existe
         $getId = DB::select("CALL crystal.spGestionarUsuarios(?,?)",[$accion,$idPersona]);        
         if (array_key_exists(0,$getId)){
@@ -262,9 +275,17 @@ class PersonasController extends Controller
                 $getIdUser = DB::select("SELECT id FROM crystal.users WHERE idPersona=?",[$idPersona]);
                 if(array_key_exists(0,$getIdUser)) {
                     $idU = $getIdUser[0]->id;
+
                     $user = User::findOrFail($idU);
                     $user->password = $password;
                     $user->save();
+
+                    //establecer configuracion que indica que el usuario inicio sesion por primera vez y cambio contraseña
+                    if($pi == 'S') {                        
+                        $user = User::findOrFail($idU);
+                        $user->primerInicio = 'N';
+                        $user->save();
+                    }
 
                     $continuar = 'S';
                     $mensaje   = 'Contraseña Cambiada Exitosamente.';
@@ -281,6 +302,44 @@ class PersonasController extends Controller
             $continuar = 'N';
             $mensaje   = 'Ocurrió un error al restablecer la contraseña. intenta de nuevo.';
         }        
+
+        // Comun response
+        $respuesta =  array(
+            //'pagination' => $pagination,
+            'Continuar' => $continuar,
+            'Mensaje' => $mensaje,            
+            'DatosRespuesta' => $datosRespuesta
+        );
+        return response()->json(compact('respuesta'), 200);
+    }
+
+    /*
+    ** Autor: Omar Jaramillo
+    ** Fecha: 1-12-2020
+    ** Descripcion: consulta los decripcion de ahorros del asociado
+    */
+    public function misAhorros(Request $request)
+    {   
+        $accion    = $request->accion; 
+        $idPersona = $request->id;
+
+        $continuar = '';
+        $mensaje   = '';
+        $datosRespuesta = [];
+
+        if($accion == 'miAhorro'){
+            $datos = DB::select("CALL crystal.sp_Gestionarpersonas(?,'','','','','','','','','','','','',?,'','')",[$accion,$idPersona]);
+            if (array_key_exists(0,$datos)) {
+                $datosRespuesta = $datos;
+                $continuar = 'S';
+                $mensaje = 'Success';
+            }else{
+                $continuar = 'N';
+                $mensaje   = 'No se encontraron datos de ahorros .intente de nuevo';
+            }
+        }
+
+        
 
         // Comun response
         $respuesta =  array(

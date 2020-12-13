@@ -1,15 +1,32 @@
 <template>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="panel panel-default">
-                    <div class="panel-heading">Example Component</div>
-
-                    <div class="panel-body">
-                        I'm an example component!
-                    </div>
-                </div>
+    <div >
+        <div class="card-box pd-20 height-100-p mb-30">
+            <div class="row">
+                <!-- <div class="col-sm-4">Fecha</div>
+                <div class="col-sm-4">Cuota de</div>
+                <div class="col-sm-4">Valor</div> -->
+                <table class="table table-striped">
+                    <thead>
+                        <th>Fecha</th>
+                        <th>Cuota de</th>
+                        <th>Valor</th>
+                    </thead>
+                    <tbody>
+                        <tr v-for="item in arrayAhorro" :key="item.idAhorro">
+                            <td v-text="item.fecha"></td>
+                            <td v-text="item.mesPertenee"></td>
+                            <td>{{ item.valorCuota | separadorMiles }}</td>
+                        </tr>
+                        <br>
+                        <tr>
+                            <td colspan="2" style="text-align: right;"><strong>Total:</strong></td>
+                            <td><strong>{{ totalAhorro }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+            <hr>
+            
         </div>
     </div>
 </template>
@@ -20,7 +37,8 @@
     export default {
         data() {
             return {
-
+                arrayAhorro: [],
+                totalAhorro: 0,
             };
         },
         computed: {
@@ -28,6 +46,20 @@
         },
         methods: {
             ...mapMutations(['restablecer']),
+
+            /*
+            ** Fecha: 01/12/2020
+            ** Autor: Omar jaramillo
+            ** descripcion: consulta la informacion general de ahorros del socio
+            */
+            inicio(){
+                const url = 'misAhorros';
+                const data = {
+                    accion: 'miAhorro',
+                    id: this.idPersonaGlobal,
+                };
+                this.peticionComun(url,data);
+            },
 
             /*
             ** Fecha: 20/11/2020
@@ -70,7 +102,15 @@
                 
                 if(resp['Continuar'] == 'S'){
                     switch(accion){ 
-                        case '':                            
+                        case 'miAhorro': 
+                            this.arrayAhorro =  resp['DatosRespuesta'];
+                            this.totalAhorro = 0;
+                            let i = 0;
+                            let a = 0;
+                            for(i=0;i<this.arrayAhorro.length;i++){
+                                a += parseInt(this.arrayAhorro[i]['valorCuota']);                                
+                            }
+                            this.totalAhorro = format(a);         
                         break;
                     }
                 }
@@ -88,7 +128,14 @@
         },
         
         mounted() {
-            console.log('Component mounted.')
+            this.inicio();
         }
     }
 </script>
+
+<style>
+    .separador{
+        border-bottom:blue 1px solid;
+        margin-bottom: 5px;        
+    }    
+</style>

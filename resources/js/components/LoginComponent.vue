@@ -49,7 +49,7 @@
                                     </div>
                                 </div>
                                 <div class="input-group custom">
-                                    <input :type="tipoCampoPass" class="form-control form-control-lg" v-model="password" name="password" placeholder="Contraseña">
+                                    <input :type="tipoCampoPass" class="form-control form-control-lg" v-model="password" name="password" placeholder="Contraseña" @keyup.enter="iniciarSesion()">
                                     <input type="hidden" v-model="documento" name="documento">
                                     <input type="hidden" v-model="token" name="token">
                                     <div class="input-group-append custom">

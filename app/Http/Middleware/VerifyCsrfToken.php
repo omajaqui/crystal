@@ -25,5 +25,8 @@ class VerifyCsrfToken extends Middleware
         'preRegitros',
         'cambiarContrasenia',
         'gestionCuotas',
+        'misAhorros',
+        'actividades',
+        'pollaMensual'
     ];
 }

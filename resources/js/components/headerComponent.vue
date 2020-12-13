@@ -14,7 +14,7 @@
                             <span class="user-name" v-text="nombreUsuario"></span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-                            <a class="dropdown-item" href="profile.html"><i class="dw dw-user1"></i> Perfil</a>
+                            <a class="dropdown-item" ><i class="dw dw-user1"></i> Perfil</a>
                             <a class="dropdown-item" @click="abrirModal(1)">
                                 <i class="dw dw-settings2"></i> 
                                 Cambiar Contraseña
@@ -141,7 +141,6 @@
                         this.iconoEyeNew = (this.iconoEyeNew == 'icon-copy fa fa-eye')? 'icon-copy fa fa-eye-slash' : 'icon-copy fa fa-eye';
                     break;
                 }
-
             },
 
             /*

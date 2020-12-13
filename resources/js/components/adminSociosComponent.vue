@@ -47,7 +47,7 @@
                                     <td v-text="item.celular"></td>
                                     <td v-text="item.correo"></td>
                                     <td v-text="item.numeroAsociado"></td>
-                                    <td v-text="item.valorCuotaMes"></td>
+                                    <td>{{ item.valorCuotaMes | separadorMiles }}</td>
                                 </tr>                            
                             </tbody>
                             </table>
@@ -744,7 +744,7 @@
                 this.viewTelefono = 'Fijo: '+socio['telFijo']+'. Celuar: '+socio['celular'];
                 this.viewContacto = 'Ciudad: '+socio['ciudad']+'. Barrio: '+socio['barrio'];
                 this.viewDirecciones = 'Dirección: '+socio['direccion']+'. Correo: '+socio['correo'];
-                this.viewAhorrroSocio = 'Cuota Mensula: '+socio['valorCuotaMes']+'. Numero de asociado: '+socio['numeroAsociado'];
+                this.viewAhorrroSocio = 'Cuota Mensula: '+format(socio['valorCuotaMes'])+'. Número de asociado: '+socio['numeroAsociado'];
             },
             
             /*
