@@ -54,7 +54,7 @@ class PersonasController extends Controller
                             ->join("socios","socios.idPersona","personas.idPersona")
                             ->select("personas.*","socios.valorCuotaMes","socios.numeroAsociado")
                             ->orderBy("socios.idPersona","DESC")
-                            ->paginate(5);
+                            ->paginate(10);
             }else{
                 $socios = DB::table("personas")
                             ->join("socios","socios.idPersona","personas.idPersona")
@@ -71,7 +71,7 @@ class PersonasController extends Controller
                                 ->orWhere("socios.valorCuotaMes","LIKE","%".$buscar."%")
                                 ->orWhere("socios.numeroAsociado","LIKE","%".$buscar."%")
                             ->orderBy("socios.idPersona","DESC")
-                            ->paginate(5);
+                            ->paginate(10);
             }
                         
             $continuar  = 'S';
@@ -340,6 +340,60 @@ class PersonasController extends Controller
         }
 
         
+
+        // Comun response
+        $respuesta =  array(
+            //'pagination' => $pagination,
+            'Continuar' => $continuar,
+            'Mensaje' => $mensaje,            
+            'DatosRespuesta' => $datosRespuesta
+        );
+        return response()->json(compact('respuesta'), 200);
+    }
+
+    /*
+    ** Autor: Omar Jaramillo
+    ** Fecha: 15-12-2020
+    ** Descripcion: restablecer la contraseña a un socio
+    */
+    public function restablecerContrasenia(Request $request)
+    {
+        $accion     = $request->accion;
+        $documento  = $request->documento;
+        $idPersona  = $request->id;
+
+        $password   = bcrypt($documento);
+
+        $continuar = '';
+        $mensaje   = '';
+        $datosRespuesta = [];
+
+        if($accion == 'restablecer') {
+            //validar si el documento de la persona recibida existe
+            //obtener el id users
+            $getIdUser = DB::select("SELECT u.id 
+                                    FROM crystal.users u 
+                                    INNER JOIN `personas` p ON p.idPersona=u.idPersona
+                                    WHERE documento=?",[$documento]);
+
+            if(array_key_exists(0,$getIdUser)) {
+                $idU = $getIdUser[0]->id;
+                //restablecer contraseña
+                //establecer configuracion que indica que el usuario restablecio la contraseña,
+                // por lo tanto debe cambiarla en su primer inicio
+                $user = User::findOrFail($idU);
+                $user->password = $password;
+                $user->primerInicio = 'S';
+                $user->save(); 
+
+                $continuar = 'S';
+                $mensaje   = 'Contraseña Restablecida Exitosamente...';
+
+            }else{
+                $continuar = 'N';
+                $mensaje   = 'Ocurrió un error al restablecer la contraseña. intente nuevamente.';
+            }
+        }
 
         // Comun response
         $respuesta =  array(

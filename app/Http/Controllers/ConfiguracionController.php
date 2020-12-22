@@ -90,4 +90,53 @@ class ConfiguracionController extends Controller
         );
         return response()->json(compact('respuesta'), 200);
     }
+
+
+    /*
+        ** Fecha: 15/12/2020
+        ** Autor: Omar Jaramillo
+        ** descripcion: consulta los seguimientos requeridos en componentes
+    */
+    public function seguimientos(Request $request)
+    {
+        $accion     = $request->accion;
+        $idPersona  = $request->id;
+
+        $continuar = '';
+        $mensaje   = '';
+        $dataRespuesta = [];
+
+        //listado de socios activos
+        $socios = DB::select("CALL crystal.sp_Gestionarpersonas(?,'','','','','','','','','','','','','','','')",['sociosCuotas']);
+        if($accion == 'CCS'){
+            $continuar = 'S';
+            $mensaje   = 'Success';
+            $dataRespuesta = ['Socios' => $socios];
+        }
+
+        if ($accion == 'consultaTotales') {
+            $resultado = DB::select("CALL crystal.spGestionSeguimientos(?,?)",[$accion,$idPersona]);
+            if(array_key_exists(0,$resultado)){
+                if($resultado[0]->res == 'S'){
+                    $dataRespuesta = [
+                        'Socios' => $socios,
+                        'Resultado' => $resultado
+                    ];
+                }               
+                $continuar = $resultado[0]->res;
+                $mensaje   = $resultado[0]->mensaje; 
+            }else{
+                $continuar = "N";
+                $mensaje   = "No se consultaron datos. intente de nuevo";
+            }            
+        }
+
+        // Comun response
+        $respuesta =  array(
+            'Continuar' => $continuar,
+            'Mensaje' => $mensaje,
+            'DataRespuesta' => $dataRespuesta
+        );
+        return response()->json(compact('respuesta'), 200);
+    }
 }

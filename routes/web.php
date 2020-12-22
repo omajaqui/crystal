@@ -35,7 +35,7 @@ Route::group(['middleware' => 'jwt.verify'], function () {
         //SOCIOS
         Route::post('/listarSocios','PersonasController@personas');
         Route::post('/confirmarGuardar','PersonasController@personas');
-        Route::post('/consultarNumsAsociado','ConfiguracionController@consultarNumsAsociado');    
+        Route::post('/consultarNumsAsociado','ConfiguracionController@consultarNumsAsociado');     
 
         //CUOTAS guardarCuota
         Route::post('/gestionCuotas','CuotasController@gestionCuotas');
@@ -51,10 +51,15 @@ Route::group(['middleware' => 'jwt.verify'], function () {
         Route::post('actividades','ConfiguracionController@actividades');
         Route::post('pollaMensual','CuotasController@pollaMensual');
 
+        //SEGUIMIENTO 
+        Route::post('seguimientos','ConfiguracionController@seguimientos');
+        Route::post('restablecerContrasenia','PersonasController@restablecerContrasenia'); 
+
 
 
     //ROUTES CONSUMIDAS SOCIOS
         Route::post('/misAhorros', 'PersonasController@misAhorros');
+        
     //ROUTES CONSUMIDAS COMUNES
         Route::post('datosUsuario', 'ValidarController@datosUsuario');
         Route::post('/cambiarContrasenia','PersonasController@cambiarContrasenia'); 

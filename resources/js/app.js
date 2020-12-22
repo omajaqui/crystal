@@ -23,6 +23,7 @@ Vue.component('admin-cuotas', require('./components/cuotasComponent.vue').defaul
 Vue.component('admin-prestamos', require('./components/adminPrestamosComponent.vue').default);
 Vue.component('form-socio', require('./components/formSocio.vue').default);  
 Vue.component('admin-actividades', require('./components/adminActividadesComponent.vue').default); 
+Vue.component('admin-seguimiento', require('./components/adminSeguimiento.vue').default); 
 
 //FORMULARIOS
 Vue.component('cuotas-mensual', require('./components/formCuotaMensual.vue').default);

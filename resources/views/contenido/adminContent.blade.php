@@ -24,6 +24,9 @@
     </template>
     <template v-if="menu==5">
         <admin-prestamos></admin-prestamos>
-    </template>  
+    </template> 
+    <template v-if="menu==6">
+        <admin-seguimiento></admin-seguimiento>
+    </template> 
 
 @endsection

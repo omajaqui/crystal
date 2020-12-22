@@ -27,6 +27,8 @@ class VerifyCsrfToken extends Middleware
         'gestionCuotas',
         'misAhorros',
         'actividades',
-        'pollaMensual'
+        'pollaMensual',
+        'seguimientos',
+        'restablecerContrasenia'
     ];
 }

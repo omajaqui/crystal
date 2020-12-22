@@ -17,17 +17,17 @@
         </div>
 
         <div class="row">
-            <div class="col-md-4 col-sm-12">
+            <div class="col-md-4 col-sm-12 marginB">
                 <div class="card-box height-100-p widget-style1">
                    <label>Mi ahorro a la fecha: </label>
                    <p style="font-size: 25px;">$ <strong>{{ miAhorro | separadorMiles}}</strong> </p>
                 </div>
             </div>
 
-            <div class="col-md-4 col-sm-12" >
+            <div class="col-md-4 col-sm-12 marginB">
                 <div class="card-box height-100-p widget-style1">
                    <label>Mi estado en la natillera:</label>
-                   <p :class="{'icon_estado_a':miEstadoNatillera=1}" v-if="miEstadoNatillera==1">
+                   <p :class="{'icon_estado_a':miEstadoNatillera==1}" v-if="miEstadoNatillera==1">
                        <i class="icon-copy dw dw-checked"></i>
                         Al día
                     </p>
@@ -38,14 +38,30 @@
                 </div>
             </div>
 
-            <div class="col-md-4 col-sm-12">
+            <div class="col-md-4 col-sm-12 marginB">
+                <div class="card-box height-100-p widget-style1">
+                   <label>Polla del mes: <b class="text-blue">{{ pollaMes }}</b></label>
+                   <p>Mi estado: 
+                        <span :class="{'icon_estado_a':pollaEstado==1}" v-if="pollaEstado==1">
+                           <i class="icon-copy dw dw-checked"></i> Al dia
+                        </span>
+                        <span :class="{'icon_estado_b':pollaEstado==2}" v-if="pollaEstado==2">
+                           <i class="icon-copy dw dw-warning-1"></i> Falta pago
+                        </span>  
+                    </p>
+                   <p>Participantes a la fecha: <b class="text-blue">{{ pollaCantPart }}</b> </p>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+             <div class="col-md-6 col-sm-12">
                 <div class="card-box height-100-p widget-style1">
                    <label>Última actividad:</label>
                    <p>Nombre: {{ nombreUltimaAct | mayusculas }}</p>
                    <p>Ganador: {{ ganadorUltimaAct | mayusculas }}</p>
                 </div>
             </div>
-            
         </div>
 
         <!-- MODAL CAMBIO DE CONTRASEÑA -->
@@ -133,6 +149,11 @@
                 //validacion de campos formulario
                 error: false,
                 campoError: '',
+
+                //polla del mes
+                pollaMes: '',
+                pollaEstado: 0,
+                pollaCantPart: 0,
             };
         },
         computed: {
@@ -281,11 +302,15 @@
                             this.numeroAsociado = datos['numeroAsociado'];
                             this.miAhorro = datos['ahorro'];
                             this.miEstadoNatillera = (datos['alDia']=='S')? 1 : 2;
+                            this.pollaMes = datos['pollaMes'];
+                            this.pollaEstado = (datos['alDiaPolla']=='S')? 1 : 2;
+                            this.pollaCantPart = datos['pollaPartipantes'];
                             //validar si es necesario mostrar ventana de cambio de contraseña
                             if(datos['primerInicio'] == 'S') {                                
                                 this.modalPass = 1;
                                 this.titleModal = this.nombreUsuario+'. Debe cambiar su contraseña';
                             }
+                            //mostrar modal con la reglas del negoco
                             this.abrilModal(1);
                         break;
 
@@ -340,5 +365,9 @@
     .icon_estado_b{
         font-size: 25px;
         color: red;
+    }
+
+    .marginB{
+        margin-bottom: 20px;
     }
 </style>
